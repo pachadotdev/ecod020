@@ -1,0 +1,339 @@
+---
+title: "Problem Set 5 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+Consider a monopoly seller with zero production cost who chooses a price to maximise profits (revenue). The consumers have one of two valuations $v \in \{1, 2\}$ with $\mathbb{P}(v = 2) = x$.
+
+a. Suppose that the monopolist has no additional information about the valuation beyond her prior belief $x$. What is the optimal price (as a function of $x$)? What is the expected profit and consumer surplus?
+b. Suppose that the monopolist receives perfect information about the valuation. What are the optimal prices? What is the expected profit and consumer surplus?
+c. Plot the (consumer surplus, profit) pairs from parts (a) and (b) on the same diagram assuming $x = 0.4$.
+d. Plot the (consumer surplus, profit) pairs from parts (a) and (b) on the same diagram assuming $x = 0.6$.
+e. Plot the consumer surplus from part (a) as a function of $x$.
+f. Suppose that the consumers can commit to revealing any information about their valuation to the monopolist. What is the maximum consumer surplus that can be achieved when $x = 0.4$? What about when $x = 0.6$?
+g. Assuming $x = 0.6$, add to your diagram from part (d) the (consumer surplus, profit) pair that maximises consumer surplus. Hence, find all (consumer surplus, profit) pairs that can result from some information structure for the monopolist.
+
+# Solution to Problem 1
+
+## Part (a): No additional information
+
+The monopolist sets a single price $p$. Since valuations are $v \in \{1, 2\}$, the only
+candidate prices are $p = 1$ and $p = 2$ (any other price is weakly dominated by
+one of these).
+
+- If $p = 1$: Both profiles buy. Profit $\pi= 1$. Consumer surplus: profile 1 gets
+  $1 - 1 = 0$, profile 2 gets $2 - 1 = 1$. Expected CS $= x \cdot 1 = x$.
+- If $p = 2$: Only profile 2 buys. Profit $= 2x$. Consumer surplus: profile 2
+  gets $2 - 2 = 0$, profile 1 doesn't buy. Expected CS $= 0$.
+
+The monopolist chooses the price that gives higher profit:
+ 
+$$
+p^*(x) =
+\begin{cases}
+1 & \text{if } x \leq \frac{1}{2} \\
+2 & \text{if } x > \frac{1}{2}
+\end{cases}
+$$
+
+$$
+\pi(x) = \max(1,\; 2x) =
+\begin{cases}
+1 & \text{if } x \leq \frac{1}{2} \\
+2x & \text{if } x > \frac{1}{2}
+\end{cases}
+$$
+
+$$
+\text{CS}(x) =
+\begin{cases}
+x & \text{if } x \leq \frac{1}{2} \\
+0 & \text{if } x > \frac{1}{2}
+\end{cases}
+$$
+
+## Part (b): Perfect information
+
+If the monopolist knows $v$ exactly, she charges $p = v$:
+
+- If $v = 1$: charges $p = 1$, profit $= 1$, CS $= 0$.
+- If $v = 2$: charges $p = 2$, profit $= 2$, CS $= 0$.
+
+Expected profit $= (1 - x) \cdot 1 + x \cdot 2 = 1 + x$.
+
+Expected CS $= 0$ (the monopolist captures the entire surplus).
+
+## Part (c): Diagram for $x = 0.4$
+
+From part (a) with $x = 0.4$: since $0.4 < 1/2$, the optimal price is $p = 1$.
+Profit $= 1$, CS $= 0.4$. Point: $(\text{CS}, \pi) = (0.4,\; 1)$.
+
+From part (b) with $x = 0.4$: profit $= 1.4$, CS $= 0$.
+Point: $(\text{CS}, \pi) = (0,\; 1.4)$.
+
+```{r}
+#| label: part-c
+#| fig-cap: "(CS, Profit) pairs for x = 0.4"
+#| warning: false
+#| message: false
+
+library(ggplot2)
+
+dpoints_c <- data.frame(
+  cs = c(0.4, 0),
+  profit = c(1, 1.4),
+  label = c("No information\n(0.4, 1)", "Perfect information\n(0, 1.4)")
+)
+
+ggplot(dpoints_c, aes(x = cs, y = profit)) +
+  geom_point(size = 3) +
+  geom_text(aes(label = label), vjust = -0.8, size = 3.5) +
+  scale_x_continuous(
+    "Consumer Surplus",
+    limits = c(-0.1, 0.6),
+    breaks = seq(0, 0.6, 0.1)
+  ) +
+  scale_y_continuous(
+    "Profit",
+    limits = c(0.8, 1.6),
+    breaks = seq(0.8, 1.6, 0.2)
+  ) +
+  theme_minimal() +
+  ggtitle("x = 0.4")
+```
+
+## Part (d): Diagram for $x = 0.6$
+
+From part (a) with $x = 0.6$: since $0.6 > 1/2$, the optimal price is $p = 2$.
+Profit $= 1.2$, CS $= 0$. Point: $(\text{CS}, \pi) = (0,\; 1.2)$.
+
+From part (b) with $x = 0.6$: profit $= 1.6$, CS $= 0$.
+Point: $(\text{CS}, \pi) = (0,\; 1.6)$.
+
+Note that both points lie on the vertical axis — when $x > 1/2$ the monopolist
+prices high even without information, so consumers get zero surplus either way.
+
+```{r}
+#| label: part-d
+#| fig-cap: "(CS, Profit) pairs for x = 0.6"
+#| warning: false
+#| message: false
+
+dpoints_d <- data.frame(
+  cs = c(0, 0),
+  profit = c(1.2, 1.6),
+  label = c("No information\n(0, 1.2)", "Perfect information\n(0, 1.6)")
+)
+
+ggplot(dpoints_d, aes(x = cs, y = profit)) +
+  geom_point(size = 3) +
+  geom_text(aes(label = label), hjust = -0.15, size = 3.5) +
+  scale_x_continuous(
+    "Consumer Surplus",
+    limits = c(-0.05, 0.6),
+    breaks = seq(0, 0.6, 0.1)
+  ) +
+  scale_y_continuous(
+    "Profit",
+    limits = c(1, 1.8),
+    breaks = seq(1, 1.8, 0.2)
+  ) +
+  theme_minimal() +
+  ggtitle("x = 0.6")
+```
+
+## Part (e): Consumer surplus from part (a) as a function of $x$
+
+From part (a), CS$(x) = x$ for $x \leq 1/2$ and CS$(x) = 0$ for $x > 1/2$.
+
+```{r}
+#| label: part-e
+#| fig-cap: "Consumer surplus as a function of x (no information)"
+#| warning: false
+#| message: false
+
+dcs <- data.frame(
+  x = c(0, 0.5, 0.5, 1),
+  cs = c(0, 0.5, 0, 0)
+)
+
+ggplot(dcs, aes(x = x, y = cs)) +
+  geom_line(linewidth = 1) +
+  geom_point(
+    data = data.frame(x = 0.5, cs = 0.5),
+    size = 3, shape = 16
+  ) +
+  geom_point(
+    data = data.frame(x = 0.5, cs = 0),
+    size = 3, shape = 1
+  ) +
+  scale_x_continuous("x = P(v = 2)", breaks = seq(0, 1, 0.1)) +
+  scale_y_continuous("Consumer Surplus", breaks = seq(0, 0.5, 0.1)) +
+  theme_minimal() +
+  ggtitle("CS(x) under no information")
+```
+
+The consumer surplus rises linearly up to $x = 1/2$ (where at the optimum
+$p = 1$, the high types enjoy surplus $2 - 1 = 1$) and
+then drops to zero at $x = 1/2$ once the monopolist switches to $p = 2$.
+
+## Part (f): Maximum consumer surplus with information design
+
+The consumers choose an information structure (signal about $v$) that the
+monopolist observes before pricing. The monopolist best-responds to her
+posterior belief $\mu$. The constraint is Bayes plausibility: the expected
+posterior must equal the prior, $\mathbb{E}[\mu] = x$.
+
+Consumer surplus as a function of the posterior $\mu$ is:
+
+$$
+\text{CS}(\mu) =
+\begin{cases}
+\mu & \text{if } \mu \leq \frac{1}{2} \quad (p = 1,\; \text{high types get surplus } 1) \\
+0 & \text{if } \mu > \frac{1}{2} \quad (p = 2,\; \text{no surplus})
+\end{cases}
+$$
+
+To find the maximum expected CS over all information structures, we compute the
+concavification (smallest concave function $\geq$ CS) of CS$(\mu)$:
+
+$$
+\text{CS}^{\text{cav}}(\mu) =
+\begin{cases}
+\mu & \text{if } \mu \leq \frac{1}{2} \\
+1 - \mu & \text{if } \mu > \frac{1}{2}
+\end{cases}
+$$
+
+This is the line connecting $(1/2, 1/2)$ to $(1, 0)$ for $\mu > 1/2$, which lies
+above CS $= 0$ on that region.
+
+When $x = 0.4$: $\text{CS}^{\text{cav}}(0.4) = 0.4$. This equals CS$(0.4)$
+from part (a), so no information design can improve on revealing nothing.
+Maximum CS $= 0.4$.
+
+This makes sense: when $x < 1/2$, the monopolist already prices at $p = 1$ and
+serves everyone. Any information that shifts the posterior above $1/2$ would
+cause the monopolist to raise the price, hurting consumers.
+
+When $x = 0.6$: $\text{CS}^{\text{cav}}(0.6) = 1 - 0.6 = 0.4$. Maximum CS
+$= 0.4$ (a large improvement over CS $= 0$ with no information).
+
+### Optimal information structure for $x = 0.6$
+
+Split the prior into posteriors $\mu_L = 1/2$ and $\mu_H = 1$:
+
+$$
+\lambda \cdot \frac{1}{2} + (1 - \lambda) \cdot 1 = 0.6 \implies \lambda = 0.8
+$$
+
+- With probability 0.8: posterior is $1/2$, monopolist charges $p = 1$, CS $= 1/2$.
+- With probability 0.2: posterior is $1$, monopolist charges $p = 2$, CS $= 0$.
+
+Expected CS $= 0.8 \times 0.5 = 0.4$. Expected profit $= 0.8 \times 1 + 0.2 \times 2 = 1.2$.
+
+Concrete signal structure: If the consumer has $v = 1$, always send signal
+$s_L$. If $v = 2$, send $s_L$ with probability $2/3$ and $s_H$ with probability
+$1/3$. The monopolist's posterior after $s_L$ is $1/2$ (charges $p = 1$) and
+after $s_H$ is $1$ (charges $p = 2$).
+
+## Part (g): Full set of achievable (CS, profit) pairs for $x = 0.6$
+
+From part (f), the max-CS point is $(\text{CS}, \pi) = (0.4,\; 1.2)$.
+
+We now characterise all (CS, profit) pairs achievable by some information
+structure.
+
+Key observations:
+
+1. Minimum profit is $\pi(x) = 1.2$: The profit function
+   $\pi(\mu) = \max(1, 2\mu)$ is convex, so by Jensen's inequality any
+   information structure satisfies
+   $\mathbb{E}[\pi(\mu)] \geq \pi(\mathbb{E}[\mu]) = 1.2$.
+
+2. Maximum profit is $1 + x = 1.6$: achieved by perfect information.
+
+3. When $\mu_L = 1/2$ and $\mu_H \in (1/2, 1]$: profit is always $1.2$ and
+   CS ranges from $0$ to $0.4$. This gives the bottom edge of the feasible
+   set.
+
+4. When $\mu_L \in [0, 1/2]$ and $\mu_H = 1$: total realised surplus is
+   constant at $1.6$ (everyone trades). So CS $+ \pi = 1.6$, giving the
+   upper edge with slope $-1$.
+
+The feasible set is a triangle with vertices:
+
+| Point | CS | Profit | Description |
+|---|---|---|---|
+| A | 0 | 1.2 | No information |
+| B | 0 | 1.6 | Perfect information |
+| C | 0.4 | 1.2 | Max-CS information |
+
+```{r}
+#| label: part-g
+#| fig-cap: "All achievable (CS, Profit) pairs for x = 0.6"
+#| warning: false
+#| message: false
+
+# Triangle vertices
+dtriangle <- data.frame(
+  cs = c(0, 0, 0.4, 0),
+  profit = c(1.2, 1.6, 1.2, 1.2)
+)
+
+# Labelled points
+dpoints_g <- data.frame(
+  cs = c(0, 0, 0.4),
+  profit = c(1.2, 1.6, 1.2),
+  label = c(
+    "A: No info\n(0, 1.2)",
+    "B: Perfect info\n(0, 1.6)",
+    "C: Max CS\n(0.4, 1.2)"
+  )
+)
+
+ggplot() +
+  geom_polygon(
+    data = dtriangle, aes(x = cs, y = profit),
+    fill = "steelblue", alpha = 0.25
+  ) +
+  geom_path(
+    data = dtriangle, aes(x = cs, y = profit),
+    linewidth = 0.8
+  ) +
+  geom_point(data = dpoints_g, aes(x = cs, y = profit), size = 3) +
+  geom_text(
+    data = dpoints_g, aes(x = cs, y = profit, label = label),
+    vjust = c(1.5, -0.5, -0.5), hjust = c(-0.1, -0.1, 0.5),
+    size = 3.5
+  ) +
+  annotate("text", x = 0.08, y = 1.38,
+    label = "Feasible set", fontface = "italic", size = 4) +
+  scale_x_continuous(
+    "Consumer Surplus",
+    limits = c(-0.05, 0.55),
+    breaks = seq(0, 0.5, 0.1)
+  ) +
+  scale_y_continuous(
+    "Profit",
+    limits = c(1.0, 1.8),
+    breaks = seq(1.0, 1.8, 0.2)
+  ) +
+  theme_minimal() +
+  ggtitle("x = 0.6: All (CS, Profit) pairs from information structures")
+```
+
+The shaded triangle is the set of all (consumer surplus, profit) pairs that can
+result from some information structure. Any point inside or on the boundary is
+achievable.
+
+- Edge A–B (left): CS $= 0$, profit $\in [1.2, 1.6]$. Achieved by
+  information structures where the monopolist always prices at 2 (both posteriors
+  above $1/2$, or one at 0 and one above $1/2$).
+- Edge B–C (top): CS $+ \pi = 1.6$ (no deadweight loss). Achieved by
+  splitting the prior into $\mu_L \in [0, 1/2]$ and $\mu_H = 1$.
+- Edge A–C (bottom): $\pi = 1.2$ (minimum profit). Achieved by splitting
+  into $\mu_L = 1/2$ and $\mu_H \in (1/2, 1]$.
+

@@ -1,0 +1,294 @@
+---
+title: "Problem Set 3 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+A seller wishes to sell an object. There are two potential buyers with valuations $v_1 \in \{1, 3\}$
+and $v_2 \in \{2, 4\}$ distributed as follows:
+
+| $v_1 / v_2$ | $v_2 = 2$ | $v_2 = 4$ |
+|-------------|-----------|-----------|
+| $v_1 = 1$   | $1/6$     | $1/6$     |
+| $v_1 = 3$   | $1/6$     | $1/2$     |
+
+a. What is the seller's revenue if she uses a second price auction? The seller decides to use
+   the following mechanism. Each buyer $i \in \{1, 2\}$ reports $v_i$. Given reports $v = (v_1, v_2)$,
+   each buyer $i \in \{1, 2\}$ wins the object if and only if $v_i > v_j$, $j \neq i$, and pays $t_i(v)$ to the
+   seller.
+b. Write down buyer 1's incentive compatibility and individual rationality constraints.
+c. Write down buyer 2's incentive compatibility and individual rationality constraints.
+d. Find a revenue maximising mechanism.
+
+# Problem 2
+
+Suppose that the seller is unsure of the true distribution of valuations and entertains two
+assumptions. One is that the valuations are distributed as above. The other is that $(v_1, v_2) = (1, 2)$ for sure.
+
+a. Under the assumption that $(v_1, v_2) = (1, 2)$ for sure, what is the seller's revenue from
+   the mechanism you found above?
+b. Under the assumption that $(v_1, v_2) = (1, 2)$ for sure, what is the seller's revenue from
+   the second price auction?
+
+# Solution to Problem 1
+
+## Part (a): Revenue from the second price auction
+
+In a second price auction, truthful bidding ($b_i = v_i$) is a dominant strategy (Proposition 2
+from Lecture 1). The highest bidder wins and pays the second-highest bid. We compute the
+revenue at each valuation profile:
+
+| Profile $(v_1, v_2)$ | Probability | Winner  | Payment | Revenue |
+|----------------------|-------------|---------|---------|---------|
+| $(1, 2)$             | $1/6$       | Buyer 2 | $1$     | $1$     |
+| $(1, 4)$             | $1/6$       | Buyer 2 | $1$     | $1$     |
+| $(3, 2)$             | $1/6$       | Buyer 1 | $2$     | $2$     |
+| $(3, 4)$             | $1/2$       | Buyer 2 | $3$     | $3$     |
+
+Expected revenue:
+
+$$
+E[\text{revenue}] = \frac{1}{6}(1) + \frac{1}{6}(1) + \frac{1}{6}(2) + \frac{1}{2}(3) = \frac{1+1+2}{6} + \frac{3}{2} = \frac{4}{6} + \frac{3}{2} = \frac{2}{3} + \frac{3}{2} = \frac{13}{6}
+$$
+
+$$
+E[\text{revenue from SPA}] = \frac{13}{6} \approx 2.17
+$$
+
+## Setup for parts (b)–(d)
+
+The mechanism has a fixed allocation rule: buyer $i$ wins iff $v_i > v_j$ (based on reports). So:
+
+| Profile $(v_1, v_2)$ | $p_1(v)$ | $p_2(v)$ |
+|----------------------|----------|----------|
+| $(1, 2)$             | $0$      | $1$      |
+| $(1, 4)$             | $0$      | $1$      |
+| $(3, 2)$             | $1$      | $0$      |
+| $(3, 4)$             | $0$      | $1$      |
+
+The seller chooses the payments $t_i(v)$ to maximise revenue subject to IC and IR.
+
+We need the conditional beliefs. From the joint distribution:
+
+- *Marginals:* $\nu_1(1) = 1/3$, $\nu_1(3) = 2/3$, $\nu_2(2) = 1/3$, $\nu_2(4) = 2/3$
+- *Buyer 1's beliefs:* $\nu(v_2 = 2|v_1 = 1) = 1/2$, $\nu(v_2 = 4|v_1 = 1) = 1/2$, $\nu(v_2 = 2|v_1 = 3) = 1/4$, $\nu(v_2 = 4|v_1 = 3) = 3/4$
+- *Buyer 2's beliefs:* $\nu(v_1 = 1|v_2 = 2) = 1/2$, $\nu(v_1 = 3|v_2 = 2) = 1/2$, $\nu(v_1 = 1|v_2 = 4) = 1/4$, $\nu(v_1 = 3|v_2 = 4) = 3/4$
+
+## Part (b): Buyer 1's IC and IR constraints
+
+Buyer 1 with type $v_1$ who reports $v_1'$ gets expected payoff:
+
+$$
+U_1(v_1, v_1') = \sum_{v_2} \nu(v_2|v_1)[p_1(v_1', v_2) \cdot v_1 - t_1(v_1', v_2)]
+$$
+
+*Type $v_1 = 1$, truthful report:*
+
+$$
+U_1(1, 1) = \frac{1}{2}[0 \cdot 1 - t_1(1, 2)] + \frac{1}{2}[0 \cdot 1 - t_1(1, 4)] = -\frac{1}{2}t_1(1, 2) - \frac{1}{2}t_1(1, 4)
+$$
+
+*Type $v_1 = 1$, misreport $v_1' = 3$:*
+
+$$
+U_1(1, 3) = \frac{1}{2}[1 \cdot 1 - t_1(3, 2)] + \frac{1}{2}[0 \cdot 1 - t_1(3, 4)] = \frac{1}{2} - \frac{1}{2}t_1(3, 2) - \frac{1}{2}t_1(3, 4)
+$$
+
+*Type $v_1 = 3$, truthful report:*
+
+$$
+U_1(3, 3) = \frac{1}{4}[1 \cdot 3 - t_1(3, 2)] + \frac{3}{4}[0 \cdot 3 - t_1(3, 4)] = \frac{3}{4} - \frac{1}{4}t_1(3, 2) - \frac{3}{4}t_1(3, 4)
+$$
+
+*Type $v_1 = 3$, misreport $v_1' = 1$:*
+
+$$
+U_1(3, 1) = \frac{1}{4}[0 \cdot 3 - t_1(1, 2)] + \frac{3}{4}[0 \cdot 3 - t_1(1, 4)] = -\frac{1}{4}t_1(1, 2) - \frac{3}{4}t_1(1, 4)
+$$
+
+*The constraints are:*
+
+$IC_1(1 \to 3)$: $U_1(1, 1) \geq U_1(1, 3)$, i.e.,
+
+$$
+-\frac{1}{2}t_1(1, 2) - \frac{1}{2}t_1(1, 4) \geq \frac{1}{2} - \frac{1}{2}t_1(3, 2) - \frac{1}{2}t_1(3, 4)
+$$
+$$
+\iff t_1(3, 2) + t_1(3, 4) - t_1(1, 2) - t_1(1, 4) \geq 1
+$$
+
+$IC_1(3 \to 1)$: $U_1(3, 3) \geq U_1(3, 1)$, i.e.,
+
+$$
+\frac{3}{4} - \frac{1}{4}t_1(3, 2) - \frac{3}{4}t_1(3, 4) \geq -\frac{1}{4}t_1(1, 2) - \frac{3}{4}t_1(1, 4)
+$$
+$$
+\iff t_1(1, 2) + 3t_1(1, 4) - t_1(3, 2) - 3t_1(3, 4) \geq -3
+$$
+
+$IR_1(1)$: $U_1(1, 1) \geq 0 \iff t_1(1, 2) + t_1(1, 4) \leq 0$
+
+$IR_1(3)$: $U_1(3, 3) \geq 0 \iff t_1(3, 2) + 3t_1(3, 4) \leq 3$
+
+## Part (c): Buyer 2's IC and IR constraints
+
+The same logic applies to buyer 2. Type $v_2$ reporting $v_2'$ gets:
+
+$$
+U_2(v_2, v_2') = \sum_{v_1} \nu(v_1|v_2)[p_2(v_1, v_2') \cdot v_2 - t_2(v_1, v_2')]
+$$
+
+*Type $v_2 = 2$, truthful:* (using $p_2(1, 2) = 1$, $p_2(3, 2) = 0$)
+
+$$
+U_2(2, 2) = \frac{1}{2}(2 - t_2(1, 2)) + \frac{1}{2}(0 - t_2(3, 2)) = 1 - \frac{1}{2}t_2(1, 2) - \frac{1}{2}t_2(3, 2)
+$$
+
+*Type $v_2 = 2$, misreport $v_2' = 4$:* (using $p_2(1, 4) = 1$, $p_2(3, 4) = 1$)
+
+$$
+U_2(2, 4) = \frac{1}{2}(2 - t_2(1, 4)) + \frac{1}{2}(2 - t_2(3, 4)) = 2 - \frac{1}{2}t_2(1, 4) - \frac{1}{2}t_2(3, 4)
+$$
+
+*Type $v_2 = 4$, truthful:*
+
+$$
+U_2(4, 4) = \frac{1}{4}(4 - t_2(1, 4)) + \frac{3}{4}(4 - t_2(3, 4)) = 4 - \frac{1}{4}t_2(1, 4) - \frac{3}{4}t_2(3, 4)
+$$
+
+*Type $v_2 = 4$, misreport $v_2' = 2$:*
+
+$$
+U_2(4, 2) = \frac{1}{4}(4 - t_2(1, 2)) + \frac{3}{4}(0 - t_2(3, 2)) = 1 - \frac{1}{4}t_2(1, 2) - \frac{3}{4}t_2(3, 2)
+$$
+
+*The constraints are:*
+
+- $IC_2(2 \to 4)$: $U_2(2, 2) \geq U_2(2, 4) \iff t_2(1, 4) + t_2(3, 4) - t_2(1, 2) - t_2(3, 2) \geq 2$
+- $IC_2(4 \to 2)$: $U_2(4, 4) \geq U_2(4, 2) \iff t_2(1, 2) + 3t_2(3, 2) - t_2(1, 4) - 3t_2(3, 4) \geq -12$
+- $IR_2(2)$: $U_2(2, 2) \geq 0 \iff t_2(1, 2) + t_2(3, 2) \leq 2$
+- $IR_2(4)$: $U_2(4, 4) \geq 0 \iff t_2(1, 4) + 3t_2(3, 4) \leq 16$
+
+## Part (d): Revenue-maximising mechanism
+
+The seller's problem is:
+
+$$
+\max_{t_1, t_2} \sum_v \nu(v)[t_1(v) + t_2(v)]
+$$
+
+subject to the IC and IR constraints from parts (b) and (c).
+
+A key observation is that the problem separates by buyer: buyer 1's constraints only involve $t_1$, and buyer 2's only involve $t_2$. So we can optimise each buyer's transfers independently.
+
+*Buyer 1's transfers.* The seller maximises:
+
+$$
+\frac{1}{6}t_1(1, 2) + \frac{1}{6}t_1(1, 4) + \frac{1}{6}t_1(3, 2) + \frac{1}{2}t_1(3, 4)
+$$
+
+*Step 1.* $IR_1(1)$ says $t_1(1, 2) + t_1(1, 4) \leq 0$. The seller wants these as large as possible, so this binds: $t_1(1, 2) + t_1(1, 4) = 0$.
+
+*Step 2.* With this binding, $IC_1(1 \to 3)$ becomes $t_1(3, 2) + t_1(3, 4) \geq 1$.
+
+*Step 3.* The remaining objective is $\frac{1}{6}t_1(3, 2) + \frac{1}{2}t_1(3, 4)$, subject to $IR_1(3)$: $t_1(3, 2) + 3t_1(3, 4) \leq 3$.
+
+*Step 4.* Bind $IR_1(3)$: set $t_1(3, 2) = 3 - 3t_1(3, 4)$. Substituting:
+
+$$
+\frac{1}{6}(3 - 3t_1(3, 4)) + \frac{1}{2}t_1(3, 4) = \frac{1}{2} - \frac{1}{2}t_1(3, 4) + \frac{1}{2}t_1(3, 4) = \frac{1}{2}
+$$
+
+The objective equals $1/2$ for any feasible split. A clean solution is:
+
+$$
+t_1(1, 2) = 0, \quad t_1(1, 4) = 0, \quad t_1(3, 2) = 3, \quad t_1(3, 4) = 0
+$$
+
+*Verification:* $IC_1(1 \to 3)$: $3 + 0 - 0 - 0 = 3 \geq 1$. $IC_1(3 \to 1)$: $0 + 0 - 3 - 0 = -3 \geq -3$.
+
+*Intuition:* Buyer 1 with $v_1 = 3$ wins only when $v_2 = 2$, and the seller extracts her full value of 3 in that state. The low type ($v_1 = 1$) never wins and pays nothing.
+
+*Buyer 2's transfers.* The seller maximises:
+
+$$
+\frac{1}{6}t_2(1, 2) + \frac{1}{6}t_2(1, 4) + \frac{1}{6}t_2(3, 2) + \frac{1}{2}t_2(3, 4)
+$$
+
+*Step 1.* Bind $IR_2(2)$: $t_2(1, 2) + t_2(3, 2) = 2$.
+
+*Step 2.* $IC_2(2 \to 4)$ then gives $t_2(1, 4) + t_2(3, 4) \geq 4$.
+
+*Step 3.* Remaining objective: $\frac{1}{3} + \frac{1}{6}t_2(1, 4) + \frac{1}{2}t_2(3, 4)$, subject to $IR_2(4)$: $t_2(1, 4) + 3t_2(3, 4) \leq 16$.
+
+*Step 4.* Bind $IR_2(4)$: set $t_2(1, 4) = 16 - 3t_2(3, 4)$. Substituting:
+
+$$
+\frac{1}{6}(16 - 3t_2(3, 4)) + \frac{1}{2}t_2(3, 4) = \frac{8}{3} - \frac{1}{2}t_2(3, 4) + \frac{1}{2}t_2(3, 4) = \frac{8}{3}
+$$
+
+Total from buyer 2: $1/3 + 8/3 = 3$.
+
+*Step 5.* We must also satisfy $IC_2(4 \to 2)$. With both IR constraints binding, this reduces to $t_2(1, 2) + 3t_2(3, 2) \geq 4$. Combined with $t_2(1, 2) + t_2(3, 2) = 2$, this gives $t_2(1, 2) \leq 1$.
+
+A clean solution is:
+
+$$
+t_2(1, 2) = 0, \quad t_2(1, 4) = 4, \quad t_2(3, 2) = 2, \quad t_2(3, 4) = 4
+$$
+
+*Verification:* $IC_2(2 \to 4)$: $4 + 4 - 0 - 2 = 6 \geq 2$. $IC_2(4 \to 2)$: $0 + 6 - 4 - 12 = -10 \geq -12$.
+
+*Optimal revenue:*
+
+| $(v_1, v_2)$ | $\nu(v)$ | $t_1(v)$ | $t_2(v)$ | $t_1(v) + t_2(v)$ |
+|--------------|----------|----------|----------|-------------------|
+| $(1, 2)$     | $1/6$    | $0$      | $0$      | $0$               |
+| $(1, 4)$     | $1/6$    | $0$      | $4$      | $4$               |
+| $(3, 2)$     | $1/6$    | $3$      | $2$      | $5$               |
+| $(3, 4)$     | $1/2$    | $0$      | $4$      | $4$               |
+
+$$
+E[\text{revenue}] = \frac{1}{6}(0) + \frac{1}{6}(4) + \frac{1}{6}(5) + \frac{1}{2}(4) = \frac{9}{6} + 2 = \frac{7}{2}
+$$
+
+*Remark.* The total surplus (winner's value) at each profile is 2, 4, 3, 4, giving expected surplus $= 7/2$. So this mechanism achieves full surplus extraction (all buyer rents are zero). This is the Crémer–McLean phenomenon (Corollary 1 from Lecture 2): when valuations are correlated, the seller can exploit the correlation in beliefs to design payment lotteries that extract all surplus. Here, the correlation means that $\nu(\cdot|v_1 = 1)$ and $\nu(\cdot|v_1 = 3)$ are different enough (linearly independent) for the seller to distinguish the types through their beliefs and charge accordingly.
+
+# Solution to Problem 2
+
+Suppose the seller is unsure of the true distribution and entertains two assumptions:
+
+- *Assumption A:* Valuations are distributed according to $\nu$ (the table from Problem 1)
+- *Assumption B:* $(v_1, v_2) = (1, 2)$ for sure
+
+## Part (a): Revenue from the Bayesian mechanism when $(v_1, v_2) = (1, 2)$
+
+From Problem 1(d), the optimal mechanism has $t_1(1, 2) = 0$ and $t_2(1, 2) = 0$.
+
+$$
+\text{Revenue} = t_1(1, 2) + t_2(1, 2) = 0 + 0 = 0
+$$
+
+The mechanism collects nothing at this profile! This is because the Bayesian mechanism was optimised for the distribution $\nu$, where profile $(1, 2)$ occurs with low probability $(1/6)$. The mechanism extracts surplus at the more likely profiles $(3, 4)$, $(1, 4)$, $(3, 2)$ instead.
+
+## Part (b): Revenue from the second price auction when $(v_1, v_2) = (1, 2)$
+
+In the SPA with truthful bidding, buyer 2 wins ($v_2 = 2 > v_1 = 1$) and pays the second-highest bid:
+
+$$
+\text{Revenue} = 1
+$$
+
+## Discussion
+
+This comparison illustrates the key idea from Lecture 3 (Theorem 2, Chung and Ely, 2007):
+
+| Mechanism             | Revenue under $\nu$ | Revenue when $(v_1, v_2) = (1, 2)$ |
+|-----------------------|---------------------|------------------------------------|
+| Bayesian optimal      | $7/2$               | $0$                                |
+| Second price auction  | $13/6$              | $1$                                |
+
+The Bayesian mechanism from Problem 1(d) achieves higher expected revenue under $\nu$, but it does so by extracting very aggressively at high-value profiles and charging nothing at low-value ones. If the seller is wrong about the distribution—for instance, if $(1, 2)$ is actually the true state—the Bayesian mechanism performs terribly (revenue $= 0$), while the SPA still generates positive revenue ($= 1$).
+
+This is the maxmin rationale for dominant strategy mechanisms: a seller who is uncertain about the correct model of buyers' beliefs and wants to protect against worst-case scenarios should prefer mechanisms that are robust—in particular, dominant strategy incentive compatible mechanisms like the second price auction. As shown in Lecture 3, when the distribution is regular, the best dominant strategy mechanism achieves the maxmin revenue: it is the best mechanism a seller can use when she wants to guarantee revenue regardless of the buyers' actual belief structure.

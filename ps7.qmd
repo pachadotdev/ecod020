@@ -1,0 +1,495 @@
+---
+title: "Problem Set 7 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+Consider the following preferences:
+
+- Alfred prefers Anna to Beth to Caroline to Deborah
+- Ben prefers Caroline to Deborah to Anna to Beth
+- Chris prefers Caroline to Anna to Deborah to Beth
+- Dan prefers Deborah to Caroline to Beth to Anna
+- Anna prefers Dan to Chris to Ben to Alfred
+- Beth prefers Ben to Chris to Alfred to Dan
+- Caroline prefers Alfred to Dan to Ben to Chris
+- Deborah prefers Chris to Dan to Alfred to Ben
+
+Check if the following matchings are stable:
+
+a. Chris with Anna, Alfred with Beth, Dan with Caroline, Ben with Deborah
+b. Chris with Anna, Alfred with Beth, Ben with Caroline, Dan with Deborah
+c. Dan with Anna, Ben with Beth, Alfred with Caroline, Chris with Deborah
+
+# Problem 2
+
+For each of the following preferences, find both the woman-optimal and the man-optimal stable matchings.
+
+(a)
+
+|      | 1st  | 2nd  | 3rd  | 4th  | 
+|------|------|------|------|------|
+| Pat  | Lily | Hana | Mira | Rose |
+| Jack | Hana | Mira | Rose | Lily |
+| Karl | Mira | Rose | Lily | Hana |
+| Les  | Hana | Lily | Mira | Rose |
+
+|      | 1st  | 2nd  | 3rd  | 4th |
+|------|------|------|------|-----|
+| Hana | Karl | Pat  | Jack | Les |
+| Lily | Jack | Karl | Pat  | Les |
+| Mira | Pat  | Jack | Karl | Les |
+| Rose | Pat  | Jack | Karl | Les |
+
+(b)
+
+|       | 1st  | 2nd         | 3rd         |
+|-------|------|-------------|-------------|
+| Alan  | Sara | Rose        | $\emptyset$ |
+| Basil | Rose | $\emptyset$ | Sara        |
+| Colin | Rose | Sara        | $\emptyset$ |
+
+|      | 1st   | 2nd   | 3rd         | 4th   |
+|------|-------|-------|-------------|-------|
+| Rose | Alan  | Basil | $\emptyset$ | Colin |
+| Sara | Basil | Colin | $\emptyset$ | Alan  |
+
+# Solution to Problem 1
+
+A matching is *stable* if:
+
+1. It is *individually rational*: no one prefers being unmatched to their current partner
+2. There is *no blocking pair*: no $(m, w)$ such that $w \succ_m \mu(m)$ and $m \succ_w \nu(w)$
+
+```{r}
+#| label: setup
+#| warning: false
+#| message: false
+
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+
+Let's encode the preferences for reference:
+
+```{r}
+#| label: preferences
+#| warning: false
+#| message: false
+
+# Men's preferences (1 = most preferred)
+men_prefs <- data.frame(
+  man = c("Alfred", "Ben", "Chris", "Dan"),
+  rank1 = c("Anna", "Caroline", "Caroline", "Deborah"),
+  rank2 = c("Beth", "Deborah", "Anna", "Caroline"),
+  rank3 = c("Caroline", "Anna", "Deborah", "Beth"),
+  rank4 = c("Deborah", "Beth", "Beth", "Anna")
+)
+
+# Women's preferences (1 = most preferred)
+women_prefs <- data.frame(
+  woman = c("Anna", "Beth", "Caroline", "Deborah"),
+  rank1 = c("Dan", "Ben", "Alfred", "Chris"),
+  rank2 = c("Chris", "Chris", "Dan", "Dan"),
+  rank3 = c("Ben", "Alfred", "Ben", "Alfred"),
+  rank4 = c("Alfred", "Dan", "Chris", "Ben")
+)
+```
+
+## Part (a): Chris-Anna, Alfred-Beth, Dan-Caroline, Ben-Deborah
+
+Let's check for blocking pairs systematically:
+
+| Pair | Does she prefer him? | Does he prefer her? | Blocking? |
+|------|---------------------|---------------------|-----------|
+| (Alfred, Anna) | Alfred is 4th, current (Chris) is 2nd. No | - | No |
+| (Alfred, Caroline) | Alfred is 1st, current (Dan) is 2nd. *Yes* | Caroline is 3rd, current (Beth) is 2nd. No | No |
+| (Alfred, Deborah) | Alfred is 3rd, current (Ben) is 4th. *Yes* | Deborah is 4th, current (Beth) is 2nd. No | No |
+| (Ben, Anna) | Ben is 3rd, current (Chris) is 2nd. No | - | No |
+| (Ben, Beth) | Ben is 1st, current (Alfred) is 3rd. *Yes* | Ben: Beth is 4th, current (Deborah) is 2nd. No | No |
+| (Ben, Caroline) | Ben is 3rd, current (Dan) is 2nd. No | - | No |
+| (Chris, Beth) | Chris is 2nd, current (Alfred) is 3rd. *Yes* | Beth is 4th, current (Anna) is 2nd. No | No |
+| (Chris, Caroline) | Chris is 4th, current (Dan) is 2nd. No | - | No |
+| (Chris, Deborah) | Chris is 1st, current (Ben) is 4th. *Yes* | Deborah is 3rd, current (Anna) is 2nd. No | No |
+| (Dan, Anna) | Dan is 1st, current (Chris) is 2nd. *Yes* | Anna is 4th, current (Caroline) is 2nd. No | No |
+| (Dan, Beth) | Dan is 4th, current (Alfred) is 3rd. No | - | No |
+| (Dan, Deborah) | Dan is 2nd, current (Ben) is 4th. *Yes* | Deborah is 1st, current (Caroline) is 2nd. *Yes* | *YES* |
+
+$$\text{Matching (a) is NOT stable: (Dan, Deborah) is a blocking pair}$$
+
+Dan prefers Deborah (his 1st choice) to Caroline (his current match, 2nd choice).
+Deborah prefers Dan (her 2nd choice) to Ben (her current match, 4th choice).
+
+## Part (b): Chris-Anna, Alfred-Beth, Ben-Caroline, Dan-Deborah
+
+Let's check for blocking pairs:
+
+| Pair | Does she prefer him? | Does he prefer her? | Blocking? |
+|------|---------------------|---------------------|-----------|
+| (Alfred, Anna) | Alfred is 4th, Chris is 2nd. No | - | No |
+| (Alfred, Caroline) | Alfred is 1st, Ben is 3rd. *Yes* | Caroline is 3rd, Beth is 2nd. No | No |
+| (Alfred, Deborah) | Alfred is 3rd, Dan is 2nd. No | - | No |
+| (Ben, Anna) | Ben is 3rd, Chris is 2nd. No | - | No |
+| (Ben, Beth) | Ben is 1st, Alfred is 3rd. *Yes* | Ben: Beth is 4th, Caroline is 1st. No | No |
+| (Ben, Deborah) | Ben is 4th, Dan is 2nd. No | - | No |
+| (Chris, Beth) | Chris is 2nd, Alfred is 3rd. *Yes* | Beth is 4th, Anna is 2nd. No | No |
+| (Chris, Caroline) | Chris is 4th, Ben is 3rd. No | - | No |
+| (Chris, Deborah) | Chris is 1st, Dan is 2nd. *Yes* | Deborah is 3rd, Anna is 2nd. No | No |
+| (Dan, Anna) | Dan is 1st, Chris is 2nd. *Yes* | Anna is 4th, Deborah is 1st. No | No |
+| (Dan, Beth) | Dan is 4th, Alfred is 3rd. No | - | No |
+| (Dan, Caroline) | Dan is 2nd, Ben is 3rd. *Yes* | Caroline is 2nd, Deborah is 1st. No | No |
+
+$$\text{No blocking pairs found} \implies \text{Matching (b) is stable}$$
+
+## Part (c): Dan-Anna, Ben-Beth, Alfred-Caroline, Chris-Deborah
+
+Let's check for blocking pairs:
+
+| Pair | Does she prefer him? | Does he prefer her? | Blocking? |
+|------|---------------------|---------------------|-----------|
+| (Alfred, Anna) | Alfred is 4th, Dan is 1st. No | - | No |
+| (Alfred, Beth) | Alfred is 3rd, Ben is 1st. No | - | No |
+| (Alfred, Deborah) | Alfred is 3rd, Chris is 1st. No | - | No |
+| (Ben, Anna) | Ben is 3rd, Dan is 1st. No | - | No |
+| (Ben, Caroline) | Ben is 3rd, Alfred is 1st. No | - | No |
+| (Ben, Deborah) | Ben is 4th, Chris is 1st. No | - | No |
+| (Chris, Anna) | Chris is 2nd, Dan is 1st. No | - | No |
+| (Chris, Beth) | Chris is 2nd, Ben is 1st. No | - | No |
+| (Chris, Caroline) | Chris is 4th, Alfred is 1st. No | - | No |
+| (Dan, Beth) | Dan is 4th, Ben is 1st. No | - | No |
+| (Dan, Caroline) | Dan is 2nd, Alfred is 1st. No | - | No |
+| (Dan, Deborah) | Dan is 2nd, Chris is 1st. No | - | No |
+
+$$\text{No blocking pairs found} \implies \text{Matching (c) is stable}$$
+
+```{r}
+#| label: matching-comparison
+#| fig-cap: "Summary of stable matchings for Problem 1"
+#| warning: false
+#| message: false
+
+# Visualize the matchings
+matchings <- data.frame(
+  matching = rep(c("(a)", "(b)", "(c)"), each = 4),
+  man = rep(c("Alfred", "Ben", "Chris", "Dan"), 3),
+  woman = c(
+    "Beth", "Deborah", "Anna", "Caroline",  # (a)
+    "Beth", "Caroline", "Anna", "Deborah",  # (b)
+    "Caroline", "Beth", "Deborah", "Anna"   # (c)
+  ),
+  stable = rep(c("Not Stable", "Stable", "Stable"), each = 4)
+)
+
+ggplot(matchings, aes(x = man, y = woman, fill = stable)) +
+  geom_tile(color = "white", linewidth = 1) +
+  facet_wrap(~matching) +
+  scale_fill_manual(values = c("Stable" = "steelblue", "Not Stable" = "tomato")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(x = "Men", y = "Women", fill = "Status") +
+  ggtitle("Matchings from Problem 1")
+```
+
+# Solution to Problem 2
+
+## Part (a): 4x4 Marriage Market
+
+*Preferences:*
+
+- Pat: Lily $\succ$ Hana $\succ$ Mira $\succ$ Rose
+- Jack: Hana $\succ$ Mira $\succ$ Rose $\succ$ Lily  
+- Karl: Mira $\succ$ Rose $\succ$ Lily $\succ$ Hana
+- Les: Hana $\succ$ Lily $\succ$ Mira $\succ$ Rose
+
+- Hana: Karl $\succ$ Pat $\succ$ Jack $\succ$ Les
+- Lily: Jack $\succ$ Karl $\succ$ Pat $\succ$ Les
+- Mira: Pat $\succ$ Jack $\succ$ Karl $\succ$ Les
+- Rose: Pat $\succ$ Jack $\succ$ Karl $\succ$ Les
+
+### Man-Optimal Stable Matching (Men Propose)
+
+*Round 1:*
+
+- Pat proposes to Lily (his 1st choice)
+- Jack proposes to Hana (his 1st choice)
+- Karl proposes to Mira (his 1st choice)
+- Les proposes to Hana (his 1st choice)
+
+Hana receives proposals from Jack and Les. She prefers Jack (3rd) to Les (4th).
+*Les is rejected.*
+
+*Tentative matching:* Pat-Lily, Jack-Hana, Karl-Mira
+
+*Round 2:*
+
+- Les proposes to Lily (his 2nd choice)
+
+Lily receives proposals from Pat and Les. She prefers Pat (3rd) to Les (4th).
+*Les is rejected.*
+
+*Round 3:*
+
+- Les proposes to Mira (his 3rd choice)
+
+Mira receives proposals from Karl and Les. She prefers Karl (3rd) to Les (4th).
+*Les is rejected.*
+
+*Round 4:*
+
+- Les proposes to Rose (his 4th choice)
+
+Rose accepts Les.
+
+*Man-optimal stable matching:*
+
+$$\text{Pat-Lily, Jack-Hana, Karl-Mira, Les-Rose}$$
+
+### Woman-Optimal Stable Matching (Women Propose)
+
+*Round 1:*
+
+- Hana proposes to Karl (her 1st choice)
+- Lily proposes to Jack (her 1st choice)
+- Mira proposes to Pat (her 1st choice)
+- Rose proposes to Pat (her 1st choice)
+
+Pat receives proposals from Mira and Rose. He prefers Mira (3rd) to Rose (4th).
+*Rose is rejected.*
+
+*Tentative matching:* Hana-Karl, Lily-Jack, Mira-Pat
+
+*Round 2:*
+
+- Rose proposes to Jack (her 2nd choice)
+
+Jack receives proposals from Lily and Rose. He prefers Rose (3rd) to Lily (4th).
+*Lily is rejected.*
+
+*Tentative matching:* Hana-Karl, Rose-Jack, Mira-Pat
+
+*Round 3:*
+
+- Lily proposes to Karl (her 2nd choice)
+
+Karl receives proposals from Hana and Lily. He prefers Lily (3rd) to Hana (4th).
+*Hana is rejected.*
+
+*Tentative matching:* Lily-Karl, Rose-Jack, Mira-Pat
+
+*Round 4:*
+
+- Hana proposes to Pat (her 2nd choice)
+
+Pat receives proposals from Mira and Hana. He prefers Hana (2nd) to Mira (3rd).
+*Mira is rejected.*
+
+*Tentative matching:* Lily-Karl, Rose-Jack, Hana-Pat
+
+*Round 5:*
+
+- Mira proposes to Jack (her 2nd choice)
+
+Jack receives proposals from Rose and Mira. He prefers Mira (2nd) to Rose (3rd).
+*Rose is rejected.*
+
+*Tentative matching:* Lily-Karl, Mira-Jack, Hana-Pat
+
+*Round 6:*
+
+- Rose proposes to Karl (her 3rd choice)
+
+Karl receives proposals from Lily and Rose. He prefers Rose (2nd) to Lily (3rd).
+*Lily is rejected.*
+
+*Tentative matching:* Rose-Karl, Mira-Jack, Hana-Pat
+
+*Round 7:*
+
+- Lily proposes to Pat (her 3rd choice)
+
+Pat receives proposals from Hana and Lily. He prefers Lily (1st) to Hana (2nd).
+*Hana is rejected.*
+
+*Tentative matching:* Rose-Karl, Mira-Jack, Lily-Pat
+
+*Round 8:*
+
+- Hana proposes to Jack (her 3rd choice)
+
+Jack receives proposals from Mira and Hana. He prefers Hana (1st) to Mira (2nd).
+*Mira is rejected.*
+
+*Tentative matching:* Rose-Karl, Hana-Jack, Lily-Pat
+
+*Round 9:*
+
+- Mira proposes to Karl (her 3rd choice)
+
+Karl receives proposals from Rose and Mira. He prefers Mira (1st) to Rose (2nd).
+*Rose is rejected.*
+
+*Tentative matching:* Mira-Karl, Hana-Jack, Lily-Pat
+
+*Round 10:*
+
+- Rose proposes to Les (her 4th choice)
+
+Les accepts Rose (she's his 4th choice, but better than being unmatched).
+
+*Woman-optimal stable matching:*
+
+$$\text{Pat-Lily, Jack-Hana, Karl-Mira, Les-Rose}$$
+
+The plot's numbers show partner's rank (M = man's rank for her, W = woman's rank for him)
+
+In this example, the man-optimal and woman-optimal stable matchings are identical. This means the stable matching is unique.
+
+```{r}
+#| label: part-2a
+#| fig-cap: "DAA for Problem 2(a) - Unique stable matching"
+#| warning: false
+#| message: false
+
+# The unique stable matching
+matching_2a <- data.frame(
+  man = c("Pat", "Jack", "Karl", "Les"),
+  woman = c("Lily", "Hana", "Mira", "Rose"),
+  man_rank = c(1, 1, 1, 4),  # Their partner's rank in their preference
+  woman_rank = c(3, 3, 3, 4)  # Their partner's rank in their preference
+)
+
+ggplot(matching_2a, aes(x = man, y = woman)) +
+  geom_tile(fill = "steelblue", alpha = 0.3, color = "steelblue", linewidth = 1) +
+  geom_text(aes(label = paste0("M:", man_rank, " W:", woman_rank)), size = 4) +
+  theme_minimal() +
+  labs(x = "Men", y = "Women") +
+  ggtitle("Problem 2(a): Unique Stable Matching")
+```
+
+## Part (b): 3x3 Market with Unacceptable Partners
+
+*Preferences (with $\emptyset$ indicating unacceptable):*
+
+- Alan: Sara $\succ$ Rose $\succ$ $\emptyset$
+- Basil: Rose $\succ$ $\emptyset$ $\succ$ Sara
+- Colin: Rose $\succ$ Sara $\succ$ $\emptyset$
+
+- Rose: Alan $\succ$ Basil $\succ$ $\emptyset$ $\succ$ Colin
+- Sara: Basil $\succ$ Colin $\succ$ $\emptyset$ $\succ$ Alan
+
+Note: Colin is unacceptable to Rose, and Alan is unacceptable to Sara.
+
+### Man-Optimal Stable Matching (Men Propose)
+
+*Round 1:*
+
+- Alan proposes to Sara (his 1st choice)
+- Basil proposes to Rose (his 1st choice)
+- Colin proposes to Rose (his 1st choice)
+
+Sara rejects Alan (he's unacceptable to her).
+Rose receives proposals from Basil and Colin. Colin is unacceptable to her, so she considers only Basil. *Rose tentatively accepts Basil, Colin is rejected.*
+
+*Tentative matching:* Basil-Rose
+
+*Round 2:*
+
+- Alan proposes to Rose (his 2nd choice)
+- Colin proposes to Sara (his 2nd choice)
+
+Rose receives proposals from Basil (current) and Alan. She prefers Alan (1st) to Basil (2nd).
+*Basil is rejected.*
+
+Sara accepts Colin (he's her 2nd choice, acceptable).
+
+*Tentative matching:* Alan-Rose, Colin-Sara
+
+*Round 3:*
+
+- Basil proposes to $\emptyset$ (his 2nd choice) — remains unmatched
+
+Sara is unacceptable to Basil, so he prefers staying single.
+
+*Man-optimal stable matching:*
+
+$$\text{Alan-Rose, Colin-Sara, Basil unmatched}$$
+
+### Woman-Optimal Stable Matching (Women Propose)
+
+*Round 1:*
+
+- Rose proposes to Alan (her 1st choice)
+- Sara proposes to Basil (her 1st choice)
+
+Alan accepts Rose (his 2nd choice).
+Basil rejects Sara (she's unacceptable to him).
+
+*Tentative matching:* Rose-Alan
+
+*Round 2:*
+
+- Sara proposes to Colin (her 2nd choice)
+
+Colin accepts Sara (his 2nd choice).
+
+*Tentative matching:* Rose-Alan, Sara-Colin
+
+*Woman-optimal stable matching:*
+
+$$\text{Alan-Rose, Colin-Sara, Basil unmatched}$$
+
+Again, the stable matching is unique.
+
+```{r}
+#| label: part-2b
+#| fig-cap: "Problem 2(b) - Market with unacceptable partners"
+#| warning: false
+#| message: false
+
+# The stable matching (with Basil unmatched)
+matching_2b <- data.frame(
+  man = c("Alan", "Basil", "Colin"),
+  woman = c("Rose", NA, "Sara"),
+  status = c("Matched", "Unmatched", "Matched")
+)
+
+ggplot(matching_2b, aes(x = man, y = woman, fill = status)) +
+  geom_tile(color = "white", linewidth = 1) +
+  geom_text(aes(label = ifelse(status == "Matched", "M", "U")), size = 8) +
+  scale_fill_manual(values = c("Matched" = "steelblue", "Unmatched" = "gray80")) +
+  theme_minimal() +
+  labs(x = "Men", y = "Women/Status", fill = "") +
+  ggtitle("Problem 2(b): Unique Stable Matching")
+```
+
+## Summary
+
+```{r}
+#| label: summary-table
+#| warning: false
+#| message: false
+
+summary_df <- data.frame(
+  Problem = c("2(a)", "2(a)", "2(b)", "2(b)"),
+  Algorithm = c("Man-optimal (men propose)", "Woman-optimal (women propose)",
+                "Man-optimal (men propose)", "Woman-optimal (women propose)"),
+  Matching = c(
+    "Pat-Lily, Jack-Hana, Karl-Mira, Les-Rose",
+    "Pat-Lily, Jack-Hana, Karl-Mira, Les-Rose",
+    "Alan-Rose, Colin-Sara, Basil-NA",
+    "Alan-Rose, Colin-Sara, Basil-NA"
+  )
+)
+
+knitr::kable(summary_df, caption = "Summary of stable matchings")
+```
+
+*Key insights from the lectures:*
+
+1. *Theorem 1 (Existence):* The Deferred Acceptance Algorithm always produces a stable matching.
+
+2. *Theorem 2 (Side-Optimality):* The DAA where one side proposes produces the optimal stable matching for that side. Every proposer gets their best stable partner, while every receiver gets their worst stable partner.
+
+3. *Lattice Structure:* The set of stable matchings forms a complete lattice. When the man-optimal and woman-optimal matchings coincide (as in both problems above), the stable matching is unique.

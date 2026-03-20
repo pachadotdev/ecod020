@@ -1,0 +1,393 @@
+---
+title: "Problem Set 6 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+Consider a monopoly seller with zero production cost who chooses a price to maximise
+profits (revenue). The buyer has one of two valuations $v \in \{1, 2\}$ with $\Pr(v = 2) = 0.6$.
+The seller has no information beyond her prior belief. We will consider different information structures for the buyer.
+
+a. Suppose the buyer has no information about her valuation. What price is optimal for
+   the monopolist to set? What is the maximised profit? What is the consumer surplus?
+b. Suppose that the buyer has perfect information about her valuation. What price is
+   optimal for the monopolist to set? What is the maximised profit? What is the consumer surplus?
+
+Let $F$ be the cdf of $v$, i.e.
+
+$$
+F(x) = \begin{cases}
+0 & \text{if } x < 1 \\
+0.4 & \text{if } x \in [1, 2) \\
+1 & \text{if } x \geq 2
+\end{cases}
+$$
+
+Suppose that the buyer receives a signal $s$ about her valuation, where $s = E(v|s)$.
+
+c. Which cdfs $G$ of $s$ are consistent with $s = E(v|s)$?
+d. Suppose the seller sets price $x$. What is the buyer's decision as a function of $s$?
+e. Suppose that the seller is indifferent between setting price 1 and $x$. What must $G(x)$ be?
+f. Suppose that
+
+$$
+G(x) = \begin{cases}
+0 & \text{if } x < 1 \\
+1 - \frac{1}{x} & \text{if } x \in [1, \bar{x}) \\
+1 & \text{if } x \geq \bar{x}
+\end{cases}
+$$
+
+where $\bar{x} \in (1, 2)$. Plot the graphs of $F$ and $G$ on the same diagram.
+
+g. Find $\bar{x}$ such that $F$ is a mean preserving spread of $G$.
+h. Given the $\bar{x}$ found in (g), what is the consumer surplus and profit?
+i. Plot all the possible (consumer surplus, profit) pairs that can arise from some information structure for the buyer.
+
+# Solution to Problem 1
+
+This problem explores buyer information design—how different information structures
+available to the buyer affect market outcomes. The key insight is that less informed
+buyers are easier to exploit, while perfectly informed buyers create standard adverse
+selection problems.
+
+*Setup:* Seller has zero cost, buyer has $v \in \{1, 2\}$ with $\Pr(v = 2) = 0.6$,
+$\Pr(v = 1) = 0.4$. Expected value is $E[v] = 0.4 \times 1 + 0.6 \times 2 = 1.6$.
+
+## Part (a): Buyer has no information
+
+When the buyer doesn't know her own valuation, she only knows $E[v] = 1.6$.
+
+*Buyer's decision:* Buy if and only if $p \leq E[v] = 1.6$.
+
+*Seller's optimization:* The seller can set any price $p \leq 1.6$ and the buyer will purchase. Revenue is maximized at $p^* = 1.6$.
+
+$$
+\text{Profit} = 1.6
+$$
+
+$$
+\text{Consumer Surplus} = E[v - p] = E[v] - p = 1.6 - 1.6 = 0
+$$
+
+*Intuition:* An uninformed buyer reveals nothing through her purchasing decision, so the seller can extract the full expected surplus.
+
+## Part (b): Buyer has perfect information
+
+When the buyer knows her type exactly:
+
+- Type $v = 1$ buys if and only if $p \leq 1$
+- Type $v = 2$ buys if and only if $p \leq 2$
+
+*Seller's options:*
+
+- $p = 1$: Both types buy. Profit $= 1$.
+- $p = 2$: Only $v = 2$ buys. Profit $= 0.6 \times 2 = 1.2$.
+
+Since $1.2 > 1$, the optimal price is $p^* = 2$.
+
+$$
+\text{Profit} = 1.2
+$$
+
+$$
+\text{Consumer Surplus} = 0.4 \times 0 + 0.6 \times (2 - 2) = 0
+$$
+
+*Intuition:* With perfect buyer information, the seller faces adverse selection. She sets a high price, excluding low types, but still extracts all surplus from high types.
+
+```{r}
+#| label: part-ab
+#| fig-cap: "Comparison of no information vs perfect information"
+#| warning: false
+#| message: false
+
+library(ggplot2)
+
+dpoints_ab <- data.frame(
+  cs = c(0, 0),
+  profit = c(1.6, 1.2),
+  label = c("No buyer info\n(0, 1.6)", "Perfect buyer info\n(0, 1.2)")
+)
+
+ggplot(dpoints_ab, aes(x = cs, y = profit)) +
+  geom_point(size = 3) +
+  geom_text(aes(label = label), hjust = -0.15, size = 3.5) +
+  scale_x_continuous(
+    "Consumer Surplus",
+    limits = c(-0.05, 0.8),
+    breaks = seq(0, 0.8, 0.2)
+  ) +
+  scale_y_continuous(
+    "Profit",
+    limits = c(0.9, 1.8),
+    breaks = seq(1, 1.8, 0.2)
+  ) +
+  theme_minimal() +
+  ggtitle("Parts (a) and (b): Extreme information structures")
+```
+
+## Part (c): Consistent CDFs for signal $s = E(v|s)$
+
+A CDF $G$ is consistent with $s = E(v|s)$ if and only if:
+
+1. *Support in $[1, 2]$:* Since $v \in \{1, 2\}$, any conditional expectation $E[v|s]$ must lie in $[1, 2]$.
+
+2. *Bayes plausibility:* By the law of iterated expectations,
+$$
+E[s] = E[E(v|s)] = E[v] = 1.6
+$$
+
+So $G$ must have mean 1.6.
+
+3. *Mean-preserving contraction:* $G$ must be a mean-preserving contraction of $F$. Equivalently, $F$ must be a mean-preserving spread of $G$.
+
+Any distribution $G$ on $[1, 2]$ with mean 1.6 that is a mean-preserving contraction of $F$ is consistent.
+
+## Part (d): Buyer's decision given signal $s$
+
+The buyer observes signal $s = E(v|s)$, which is her expected valuation conditional on the signal. Given price $x$:
+
+$$
+\text{Buyer purchases} \iff s \geq x
+$$
+
+The buyer buys whenever her expected value (given her information) exceeds the price.
+
+## Part (e): Seller indifference condition
+
+The seller's profit at price $p$ is:
+$$
+\pi(p) = p \cdot \Pr(s \geq p) = p \cdot (1 - G(p))
+$$
+
+At price $p = 1$: $\pi(1) = 1 \cdot (1 - G(1)) = 1 \cdot 1 = 1$ (since $G(1) = 0$).
+
+For indifference between price 1 and price $x$:
+$$
+1 = x \cdot (1 - G(x))
+$$
+
+Solving for $G(x)$:
+$$
+G(x) = 1 - \frac{1}{x}
+$$
+
+## Part (f): Plot of $F$ and $G$
+
+```{r}
+#| label: part-f
+#| fig-cap: "CDFs F (valuation) and G (signal) for x̄ = e^0.6"
+#| warning: false
+#| message: false
+
+xbar <- exp(0.6)
+
+# Create data for F (step function)
+x_vals <- seq(0, 2.5, length.out = 500)
+F_vals <- ifelse(x_vals < 1, 0, ifelse(x_vals < 2, 0.4, 1))
+
+# Create data for G
+G_vals <- ifelse(x_vals < 1, 0, ifelse(x_vals < xbar, 1 - 1/x_vals, 1))
+
+df_F <- data.frame(x = x_vals, cdf = F_vals, Distribution = "F (valuation)")
+df_G <- data.frame(x = x_vals, cdf = G_vals, Distribution = "G (signal)")
+df_both <- rbind(df_F, df_G)
+
+ggplot(df_both, aes(x = x, y = cdf, color = Distribution,
+    linetype = Distribution)) +
+  geom_line(linewidth = 1) +
+  geom_vline(xintercept = xbar, linetype = "dashed", alpha = 0.5) +
+  annotate("text", x = xbar + 0.05, y = 0.5, 
+           label = paste0("x̄ = e^0.6 ≈ ", round(xbar, 3)), 
+           hjust = 0, size = 3.5) +
+  scale_x_continuous("x", limits = c(0, 2.5), breaks = c(0, 1, xbar, 2), 
+                     labels = c("0", "1", "x̄", "2")) +
+  scale_y_continuous("CDF", breaks = seq(0, 1, 0.2)) +
+  scale_color_manual(values = c("F (valuation)" = "blue",
+    "G (signal)" = "red")) +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  ggtitle("F and G on the same diagram")
+```
+
+## Part (g): Finding $\bar{x}$ for mean-preserving spread
+
+For $F$ to be a mean-preserving spread of $G$, we need $E_G[s] = E_F[v] = 1.6$.
+
+The distribution $G$ has:
+- Density $g(x) = \frac{d}{dx}(1 - 1/x) = \frac{1}{x^2}$ for $x \in [1, \bar{x})$
+- Point mass of size $1 - G(\bar{x}^-) = 1 - (1 - 1/\bar{x}) = \frac{1}{\bar{x}}$ at $x = \bar{x}$
+
+Computing $E[s]$:
+$$
+E[s] = \int_1^{\bar{x}} x \cdot \frac{1}{x^2} dx + \bar{x} \cdot \frac{1}{\bar{x}}
+$$
+$$
+= \int_1^{\bar{x}} \frac{1}{x} dx + 1 = \ln(\bar{x}) + 1
+$$
+
+Setting $E[s] = 1.6$:
+$$
+\ln(\bar{x}) + 1 = 1.6 \implies \ln(\bar{x}) = 0.6 \implies \bar{x} = e^{0.6} \approx 1.822
+$$
+
+## Part (h): Consumer surplus and profit at $\bar{x} = e^{0.6}$
+
+With this information structure, the seller is indifferent between all prices $p \in [1, \bar{x}]$, each yielding:
+
+$$
+\text{Profit} = 1
+$$
+
+The consumer surplus depends on which price the seller sets:
+
+*If $p = 1$:* All buyers purchase.
+$$
+\text{CS} = E[s - 1] = E[s] - 1 = 1.6 - 1 = 0.6
+$$
+
+*If $p = \bar{x}$:* Only buyers with $s = \bar{x}$ (the point mass) purchase.
+$$
+\text{CS} = (\bar{x} - \bar{x}) \cdot \frac{1}{\bar{x}} = 0
+$$
+
+So with profit $= 1$, consumer surplus can range from $0$ to $0.6$.
+
+```{r}
+#| label: part-h
+#| fig-cap: "Profit indifference at different prices"
+#| warning: false
+#| message: false
+
+xbar <- exp(0.6)
+prices <- seq(1, xbar, length.out = 100)
+
+# At each price, profit = 1 (by construction)
+# CS = E[s - p | s >= p] * Pr(s >= p)
+# For s with density 1/x^2 on [1, xbar) and atom 1/xbar at xbar:
+
+compute_cs <- function(p) {
+  if (p >= xbar) return(0)
+  # Integral from p to xbar of (s - p) * (1/s^2) ds + (xbar - p) * (1/xbar)
+  integral_part <- integrate(
+    function(s) (s - p) / s^2, lower = p, upper = xbar)$value
+  atom_part <- (xbar - p) / xbar
+  return(integral_part + atom_part)
+}
+
+cs_vals <- sapply(prices, compute_cs)
+profit_vals <- rep(1, length(prices))
+
+df_ph <- data.frame(price = prices, CS = cs_vals, profit = profit_vals)
+
+ggplot(df_ph, aes(x = price, y = CS)) +
+  geom_line(linewidth = 1, color = "darkgreen") +
+  geom_point(data = data.frame(price = c(1, xbar), CS = c(0.6, 0)), 
+             size = 3, color = "darkgreen") +
+  scale_x_continuous("Price p", breaks = c(1, 1.4, xbar), 
+                     labels = c("1", "1.4", "x̄")) +
+  scale_y_continuous("Consumer Surplus", breaks = seq(0, 0.6, 0.1)) +
+  theme_minimal() +
+  ggtitle("Consumer Surplus vs Price (Profit = 1 throughout)")
+```
+
+## Part (i): All feasible (CS, profit) pairs
+
+The feasible set is determined by the range of information structures for the buyer. By Theorem 2 from Lecture 6 (Roesler and Szentes, 2017), the feasible set is the *convex hull* of three points:
+
+- $(0, p^*)$ where $p^* = 1$ is the minimum achievable profit
+- $(\mu - p^*, p^*) = (0.6, 1)$ is the max-CS point
+- $(0, \mu) = (0, 1.6)$ is the no-information point
+
+*Key vertices:*
+
+| Point | CS | Profit | Description |
+|-------|-----|--------|-------------|
+| A | 0 | 1.6 | No buyer information (seller extracts $E[v]$) |
+| B | 0 | 1 | Minimum profit (truncated Pareto with $p = 1$) |
+| C | 0.6 | 1 | Max-CS information structure (with $p = 1$) |
+
+Note: Perfect buyer information gives $(0, 1.2)$, which lies *on the edge A–B*, not at a vertex.
+
+*Boundary analysis:*
+
+1. *Edge A–B (left edge):* CS $= 0$, profit $\in [1, 1.6]$. For any $\pi \in [1, 1.6]$, there exists a truncated Pareto $G_\pi^B$ with $\Pi(G_\pi^B) = \pi$. The seller can always set price $p = B$ (the upper bound of the support) to extract all surplus.
+
+2. *Edge A–C (top edge):* Total surplus $= \mu = 1.6$ is achieved (no deadweight loss). So CS $+$ profit $= 1.6$, giving a line with slope $-1$.
+
+3. *Edge B–C (bottom edge):* Profit $= p^* = 1$. With the truncated Pareto $G_1^B$ where $B = \bar{x} = e^{0.6}$, the seller is indifferent over prices $p \in [1, \bar{x}]$. Depending on which price is selected, CS ranges from $0$ (at $p = \bar{x}$) to $0.6$ (at $p = 1$).
+
+```{r}
+#| label: part-i
+#| fig-cap: "All achievable (CS, Profit) pairs from buyer information structures"
+#| warning: false
+#| message: false
+
+# Triangle vertices (corrected per Lecture 6)
+dtriangle <- data.frame(
+  cs = c(0, 0, 0.6, 0),
+  profit = c(1.6, 1, 1, 1.6)
+)
+
+# Labelled points (vertices)
+dpoints_i <- data.frame(
+  cs = c(0, 0, 0.6),
+  profit = c(1.6, 1, 1),
+  label = c(
+    "A: No buyer info\n(0, 1.6)",
+    "B: Min profit\n(0, 1)",
+    "C: Max CS\n(0.6, 1)"
+  )
+)
+
+# Perfect information point (on edge, not vertex)
+dpoint_perf <- data.frame(cs = 0, profit = 1.2)
+
+ggplot() +
+  geom_polygon(
+    data = dtriangle, aes(x = cs, y = profit),
+    fill = "steelblue", alpha = 0.25
+  ) +
+  geom_path(
+    data = dtriangle, aes(x = cs, y = profit),
+    linewidth = 0.8
+  ) +
+  geom_point(data = dpoints_i, aes(x = cs, y = profit), size = 3) +
+  geom_point(data = dpoint_perf, aes(x = cs, y = profit), 
+             size = 3, shape = 17, color = "darkred") +
+  geom_text(
+    data = dpoints_i, aes(x = cs, y = profit, label = label),
+    vjust = c(-0.5, 1.5, -0.5), hjust = c(-0.1, -0.1, 0.5),
+    size = 3.5
+  ) +
+  annotate("text", x = 0.08, y = 1.2, 
+           label = "Perfect info\n(0, 1.2)", size = 3, hjust = 0) +
+  annotate("text", x = 0.15, y = 1.35,
+    label = "Feasible set", fontface = "italic", size = 4) +
+  scale_x_continuous(
+    "Consumer Surplus",
+    limits = c(-0.05, 0.75),
+    breaks = seq(0, 0.7, 0.1)
+  ) +
+  scale_y_continuous(
+    "Profit",
+    limits = c(0.6, 1.8),
+    breaks = seq(0.6, 1.8, 0.2)
+  ) +
+  theme_minimal() +
+  ggtitle("All (CS, Profit) pairs from buyer information structures")  
+```
+
+*Interpretation:*
+
+The shaded triangle represents all achievable (consumer surplus, profit) pairs.
+
+- *Less buyer information benefits the seller:* Moving up the left edge from B to A, the seller's profit increases from $1$ to $1.6$ as the buyer becomes less informed. Perfect buyer information ($\pi = 1.2$) lies strictly between these extremes.
+
+- *The minimum profit is $p^* = 1$:* This is achieved by the truncated Pareto distribution from part (g). At this profit level, consumer surplus can range from $0$ to $0.6$ depending on the seller's price choice.
+
+- *Trade-off structure:* The edge A–C represents efficient outcomes (no deadweight loss, total surplus $= 1.6$). Points strictly inside the triangle or on edge B–C involve some efficiency loss.
+
+This result matches Theorem 2 from Lecture 6: the feasible set is the convex hull of $(0, p^*)$, $(\mu - p^*, p^*)$, and $(0, \mu)$.

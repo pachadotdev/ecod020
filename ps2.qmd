@@ -1,0 +1,288 @@
+---
+title: "Problem Set 2 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+Consider a setting with one buyer who has uniformly distributed private valuation $v \in [0, 1]$
+for an object a seller wishes to sell.
+
+a. Characterize the incentive compatible mechanisms in this setting.
+b. Write down the seller's revenue maximisation problem.
+c. Show that it is optimal to post a price. What is the optimal price?
+
+# Problem 2
+
+Consider now a setting with two buyers and assume independent and uniformly distributed
+valuations. The seller decides to run a second price auction with reserve price $r \in [0, 1]$.
+
+a. Find a symmetric equilibrium strategy.
+b. What is the expected payment of type $v_i \geq r$?
+c. What is the expected revenue of the seller?
+d. What value of $r$ maximises the seller's revenue?
+e. Argue that the second price auction with reserve price $1/2$ is the revenue maximising
+   mechanism.
+
+# Solution to Problem 1
+
+## Part (a): Characterize the incentive compatible mechanisms
+
+*Setup.* There is one buyer ($n = 1$) with valuation $v \in [0, 1]$, $F(v) = v$ (uniform), $f(v) = 1$. A direct mechanism consists of:
+
+- An allocation rule $P(v) = \Pr(\text{buyer gets the object} \mid v)$
+- A transfer rule $T(v) = E[\text{payment} \mid v]$
+
+The buyer's payoff from reporting $v$ when her true value is $v'$ is:
+
+$$
+U(v', v) = P(v)v' - T(v)
+$$
+
+Let $U(v) := P(v)v - T(v)$ be the payoff from truthful reporting.
+
+From Lemma 1 in Lecture 1, a direct mechanism $(P, T)$ is incentive compatible if and only if:
+
+1. $P$ is (weakly) increasing
+2. $U(v) = U(0) + \int_0^v P(x) \, dx$
+
+Condition 2 pins down the transfer rule. Since $T(v) = P(v)v - U(v)$:
+
+$$
+T(v) = P(v)v - U(0) - \int_0^v P(x) \, dx
+$$
+
+*Intuition.* Once we fix the allocation rule $P(v)$ and the payoff of the lowest type $U(0)$, incentive compatibility completely determines the payments. This is the Revenue Equivalence idea: the allocation rule and the boundary condition $U(0)$ are all that matter.
+
+## Part (b): Revenue maximisation problem
+
+The seller wants to maximise expected revenue:
+
+$$
+E[\text{revenue}] = \int_0^1 T(v) f(v) \, dv = \int_0^1 T(v) \, dv
+$$
+
+*Substituting the IC constraint.* From part (a):
+
+$$
+T(v) = P(v)v - U(0) - \int_0^v P(x) \, dx
+$$
+
+So the seller's problem is:
+
+$$
+\max_{P, U(0)} \int_0^1 \left[ P(v)v - U(0) - \int_0^v P(x) \, dx \right] dv
+$$
+
+subject to:
+
+- $P$ is increasing (IC requirement)
+- $U(v) \geq 0$ for all $v$ (individual rationality, i.e., the buyer can walk away)
+
+*Simplifying.* From the Lecture 1 derivation (switching the order of integration):
+
+$$
+\int_0^1 \int_0^v P(x) \, dx \, dv = \int_0^1 P(x)(1 - x) \, dx
+$$
+
+So the objective becomes:
+
+$$
+\int_0^1 P(v)v \, dv - U(0) - \int_0^1 P(v)(1 - v) \, dv = \int_0^1 P(v)(2v - 1) \, dv - U(0)
+$$
+
+*IR constraint.* Since $U(v) = U(0) + \int_0^v P(x) \, dx$ and $P \geq 0$, the payoff $U(v)$ is minimised at $v = 0$. So IR requires only $U(0) \geq 0$. Since $U(0)$ enters the objective with a minus sign, the seller optimally sets $U(0) = 0$.
+
+*Virtual valuation.* With $F(v) = v$ and $f(v) = 1$, the virtual valuation is:
+
+$$
+\psi(v) = v - \frac{1 - F(v)}{f(v)} = v - (1 - v) = 2v - 1
+$$
+
+So the seller's problem becomes:
+
+$$
+\max_{P \text{ increasing}} \int_0^1 P(v)\psi(v) \, dv = \max_{P \text{ increasing}} \int_0^1 P(v)(2v - 1) \, dv
+$$
+
+## Part (c): Optimal mechanism is a posted price
+
+*Solving the maximisation problem.* We want to choose $P(v) \in [0, 1]$ (increasing) to maximise $\int_0^1 P(v)(2v - 1) \, dv$.
+
+Since $\psi(v) = 2v - 1$ is strictly increasing (so the "regularity" condition from Theorem 5 of Lecture 1 holds), we can solve pointwise:
+
+- When $\psi(v) > 0$, i.e., $v > 1/2$: set $P(v) = 1$ (sell with certainty)
+- When $\psi(v) < 0$, i.e., $v < 1/2$: set $P(v) = 0$ (don't sell)
+- When $\psi(v) = 0$, i.e., $v = 1/2$: $P(v)$ can be anything (zero measure)
+
+This gives:
+
+$$
+P^*(v) = \begin{cases}
+0 & \text{if } v < 1/2 \\
+1 & \text{if } v \geq 1/2
+\end{cases}
+$$
+
+Note that $P^*$ is increasing, so the IC constraint is automatically satisfied.
+
+*This is a posted price.* The allocation $P^*$ says: "the buyer gets the object if and only if $v \geq 1/2$."
+
+The payment, from part (a) with $U(0) = 0$:
+
+$$
+T^*(v) = P^*(v) \cdot v - \int_0^v P^*(x) \, dx
+$$
+
+For $v < 1/2$: $T^*(v) = 0$ (no trade, no payment).
+
+For $v \geq 1/2$:
+
+$$
+T^*(v) = 1 \cdot v - \int_{1/2}^v 1 \, dx = v - (v - 1/2) = 1/2
+$$
+
+So the buyer pays $1/2$ whenever she gets the object. This is exactly a take-it-or-leave-it price of $p = 1/2$.
+
+$$
+\text{Optimal mechanism: post a price } p^* = 1/2
+$$
+
+*Intuition.* With one buyer, there is no competition to exploit. The seller faces a classic monopoly pricing problem: the buyer has "demand" $q = 1 - F(p) = 1 - p$, so revenue is $R(p) = p(1 - p)$, maximised at $p = 1/2$ with revenue $1/4$. This connects to the interpretation from Lecture 2 where the virtual valuation is the marginal revenue.
+
+*Expected revenue:*
+
+$$
+E[\text{revenue}] = \int_0^1 T^*(v) \, dv = \int_{1/2}^1 \frac{1}{2} \, dv = \frac{1}{2} \cdot \frac{1}{2} = \frac{1}{4}
+$$
+
+# Solution to Problem 2
+
+Same setting as Problem Set 1 but with $n = 2$, $F_i(v_i) = v_i$, and a reserve price $r \in [0, 1]$.
+
+*Recall the rules (from Lecture 2).* In a second price auction with reserve price $r$:
+
+- Any bid below $r$ is disqualified
+- The highest qualified bidder wins
+- The winner pays $\max\{r, \text{second highest bid}\}$
+- If no bid is qualified, the seller keeps the object
+
+## Part (a): Symmetric equilibrium strategy
+
+*Claim:* $\beta(v_i) = v_i$ for $v_i \geq r$ (bid truthfully), and do not participate if $v_i < r$.
+
+*Why?* The argument is almost identical to the standard second price auction (Proposition 2 from Lecture 1). The key insight is that your bid only determines whether you win, not how much you pay (you pay the maximum of $r$ and the other bid). So:
+
+- If $v_i < r$: even if you win, you pay at least $r > v_i$, giving negative payoff. So it's better not to participate.
+- If $v_i \geq r$: bidding $v_i$ is weakly dominant by the same logic as in the standard second price auction. Bidding higher than $v_i$ risks winning and paying more than your value. Bidding lower risks losing when you could have won profitably.
+
+$$
+\beta(v_i) = \begin{cases}
+v_i & \text{if } v_i \geq r \\
+\text{no bid} & \text{if } v_i < r
+\end{cases}
+$$
+
+## Part (b): Expected payment of type $v_i \geq r$
+
+Buyer $i$ with $v_i \geq r$ wins when $v_j < v_i$ (since $\beta$ is increasing). When she wins, she pays $\max\{r, v_j\}$ if $v_j \geq r$, or $r$ if $v_j < r$.
+
+We split by whether the other bidder participates:
+
+*Case 1: $v_j < r$ (other doesn't participate).* This happens with probability $\Pr(v_j < r) = r$. Buyer $i$ is the only bidder and wins, paying $r$.
+
+*Case 2: $r \leq v_j < v_i$ (other participates but loses).* Buyer $i$ wins and pays $v_j$.
+
+$$
+\Pr(r \leq v_j < v_i) = v_i - r, \quad E[v_j \mid r \leq v_j < v_i] = \frac{r + v_i}{2}
+$$
+
+Expected payment from this case: $(v_i - r) \cdot \frac{r + v_i}{2} = \frac{v_i^2 - r^2}{2}$
+
+*Case 3: $v_j \geq v_i$ (other bidder wins).* Buyer $i$ loses and pays nothing.
+
+*Total expected payment:*
+
+$$
+E[\text{payment} \mid v_i] = r \cdot r + \frac{v_i^2 - r^2}{2} + 0 = r^2 + \frac{v_i^2 - r^2}{2}
+$$
+
+$$
+E[\text{payment} \mid v_i] = \frac{r^2 + v_i^2}{2} \quad \text{for } v_i \geq r
+$$
+
+*Sanity check.* When $r = 0$, this gives $v_i^2/2$, which matches the expected payment in the standard second price auction with $n = 2$ and $F(v) = v$ (from PS1, Problem 1(b) with $n = 2$: $\frac{n-1}{n} v_i^n = \frac{1}{2} v_i^2$).
+
+## Part (c): Expected revenue of the seller
+
+By symmetry, revenue $= 2 \times E[\text{payment from one buyer}]$.
+
+$$
+E[\text{payment from buyer } i] = \int_r^1 \frac{r^2 + v_i^2}{2} \cdot 1 \, dv_i = \frac{1}{2} \int_r^1 (r^2 + v_i^2) \, dv_i
+$$
+
+$$
+= \frac{1}{2} \left[ r^2 v_i + \frac{v_i^3}{3} \right]_r^1 = \frac{1}{2} \left[ r^2 + \frac{1}{3} - r^3 - \frac{r^3}{3} \right] = \frac{1}{2} \left[ r^2 + \frac{1}{3} - \frac{4r^3}{3} \right]
+$$
+
+*Total expected revenue:*
+
+$$
+E[\text{revenue}] = r^2 + \frac{1}{3} - \frac{4r^3}{3}
+$$
+
+*Sanity check.* When $r = 0$: revenue $= 1/3$, matching the standard second price auction revenue with $n = 2$ from PS1.
+
+## Part (d): Revenue-maximising reserve price
+
+Take the derivative and set it to zero:
+
+$$
+\frac{d}{dr} \left( r^2 + \frac{1}{3} - \frac{4r^3}{3} \right) = 2r - 4r^2 = 2r(1 - 2r)
+$$
+
+Setting this to zero: $r = 0$ or $r = 1/2$.
+
+Second derivative: $2 - 8r$. At $r = 1/2$: $2 - 4 = -2 < 0$, so $r = 1/2$ is a local maximum.
+
+Check boundary: at $r = 0$, revenue $= 1/3$. At $r = 1/2$, revenue $= 1/4 + 1/3 - 4/24 = 1/4 + 1/3 - 1/6 = 5/12$. At $r = 1$, revenue $= 1 + 1/3 - 4/3 = 0$.
+
+$$
+r^* = \frac{1}{2}, \quad E[\text{revenue}] = \frac{5}{12}
+$$
+
+*Intuition.* The reserve price $r = 1/2$ is exactly where the virtual valuation equals zero: $\psi(v) = 2v - 1 = 0 \iff v = 1/2$. This is no coincidence—it connects directly to the optimal mechanism theory from Lecture 1.
+
+## Part (e): Second price auction with reserve $1/2$ is revenue-maximising
+
+We need to argue that no mechanism can do better than revenue $5/12$.
+
+From Theorem 5 and Corollary 2 of Lecture 1: When the virtual valuation $\psi_i(v_i) = v_i - \frac{1 - F_i(v_i)}{f_i(v_i)}$ is increasing for each $i$ and the distributions are identical, the optimal mechanism is a second price auction with reserve price $r^* = \psi_i^{-1}(0)$.
+
+Let's verify the conditions:
+
+1. *Virtual valuation is increasing.* With $F(v) = v$ and $f(v) = 1$: $\psi(v) = 2v - 1$, which is strictly increasing.
+2. *Distributions are identical.* $F_1 = F_2 = F$.
+3. *Optimal reserve price.* $\psi(r^*) = 0 \iff 2r^* - 1 = 0 \iff r^* = 1/2$.
+
+By Corollary 2 of Lecture 1, the second price auction with reserve price $r^* = 1/2$ is optimal among all selling mechanisms. Specifically, the optimal mechanism allocates the object to the buyer with the highest positive virtual valuation:
+
+$$
+p_i^*(v_1, v_2) = \begin{cases}
+1 & \text{if } \psi(v_i) > \max\{\psi(v_j), 0\} \\
+0 & \text{otherwise}
+\end{cases}
+$$
+
+Since $\psi$ is increasing, $\psi(v_i) > \psi(v_j) \iff v_i > v_j$, and $\psi(v_i) > 0 \iff v_i > 1/2$. So the optimal allocation is:
+
+- Sell to buyer $i$ if $v_i > v_j$ and $v_i > 1/2$
+- Don't sell if both valuations are below $1/2$
+
+This is exactly what the second price auction with reserve price $1/2$ does.
+
+$$
+\text{The SPA with } r = 1/2 \text{ is optimal, with revenue } \frac{5}{12}
+$$
+
+*Remark.* Comparing with Problem 1: with one buyer the seller earns $1/4$, but with two buyers and the optimal reserve price the seller earns $5/12$. Competition between buyers increases revenue from $1/4$ to $5/12$ (67% increase). Note also that the optimal reserve price is the same ($1/2$) regardless of the number of buyers, because it depends only on where $\psi(v) = 0$, which is a property of the distribution, not the number of bidders.

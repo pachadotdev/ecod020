@@ -1,0 +1,330 @@
+---
+title: "Problem Set 4 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+Let the receiver choose from three possible actions $a \in \{0, 1, 2\}$ (e.g. receiver is the government considering two possible reforms, 1 and 2, or sticking with the status quo 0). The state $\theta \in \{\theta_1, \theta_2\}$ is known by the sender who gets payoff $a$ from each action regardless of the state (e.g. sender is a lobbyist/advisor who is biased towards reform 2). The receiver prefers to choose $a \in \{1, 2\}$ whenever she assigns probability strictly greater than $3/4$ to state $\theta_a$; otherwise, she (weakly) prefers $a = 0$. Her prior belief is that each state is equally likely.
+
+a. What is the sender's payoff if the receiver perfectly learns the state?
+b. What is the sender's payoff if no information is revealed?
+c. Plot the value function of the sender as a function of the receiver's posterior beliefs.
+
+Suppose that the sender can commit to an information structure before learning the state, i.e. she can induce any Bayes' plausible posterior belief for the receiver.
+
+d. What is the sender's maximum payoff from commitment?
+
+Now suppose that the sender has no commitment power: in each state, any message she sends to the receiver must be optimal. Suppose that the sender sends two messages "choose 1" and "choose 2" with the following probabilities:
+
+$$
+P(\text{choose 2}|\theta = \theta_1) = 1/3
+$$
+$$
+P(\text{choose 1}|\theta = \theta_1) = 2/3
+$$
+$$
+P(\text{choose 2}|\theta = \theta_2) = 1
+$$
+
+e. What is the receiver's belief after receiving message "choose 1"?
+f. What is the receiver's belief after receiving message "choose 2"?
+g. Find an equilibrium where the sender gets payoff 1.
+
+# Problem 2
+
+Consider the following zero-sum game of incomplete information:
+
+*State 1:*
+
+|   | L | M | R |
+|---|---|---|---|
+| U | 4 | 0 | 2 |
+| D | 4 | 0 | −2 |
+
+*State 2:*
+
+|   | L | M | R |
+|---|---|---|---|
+| U | 0 | 4 | −2 |
+| D | 0 | 4 | 2 |
+
+The numbers in the cells represent player 1's payoffs (player 2's payoff is the negative of player 1's payoff). The probability of state 1 is $p$.
+
+a. What is the Nash equilibrium if neither player knows the state?
+b. Plot the value to player 1 of the equilibrium found in (a) for each $p \in [0, 1]$.
+
+Suppose that player 1 knows the state but player 2 does not, and the game is repeated infinitely many times. Aumann and Maschler (1995) show that the value of the infinitely repeated game (to player 1) is $\text{cav } v$, where $v$ is the value function from (b).
+
+c. What is the value of the infinitely repeated game if $p = 1/2$?
+
+# Solution to Problem 1
+
+This problem is an application of Bayesian Persuasion (Kamenica and Gentzkow 2011). Write $\mu = \Pr(\theta_1)$ for the receiver's posterior belief. The receiver's decision rule is:
+
+$$
+a^*(\mu) = \begin{cases}
+2 & \text{if } \mu < 1/4 \quad (\text{i.e. } \Pr(\theta_2) > 3/4), \\
+0 & \text{if } 1/4 \leq \mu \leq 3/4, \\
+1 & \text{if } \mu > 3/4.
+\end{cases}
+$$
+
+The prior is $\mu_0 = 1/2$.
+
+## Part (a): Full information
+
+If the receiver perfectly learns the state:
+
+- $\theta = \theta_1$: posterior $\mu = 1 > 3/4$, receiver plays $a = 1$, sender gets 1.
+- $\theta = \theta_2$: posterior $\mu = 0 < 1/4$, receiver plays $a = 2$, sender gets 2.
+
+$$
+E[u_S] = \frac{1}{2} \cdot 1 + \frac{1}{2} \cdot 2 = \frac{3}{2}.
+$$
+
+## Part (b): No information
+
+With no information the receiver keeps the prior $\mu = 1/2$. Since $1/4 \leq 1/2 \leq 3/4$, the receiver plays the safe action $a = 0$.
+
+$$
+E[u_S] = 0.
+$$
+
+## Part (c): Sender's value function
+
+The sender's indirect payoff as a function of the posterior $\mu$ is:
+
+$$
+\hat{v}(\mu) = \begin{cases}
+2 & \text{if } \mu \in [0, 1/4), \\
+0 & \text{if } \mu \in [1/4, 3/4], \\
+1 & \text{if } \mu \in (3/4, 1].
+\end{cases}
+$$
+
+The function takes value 2 on the left (receiver confident in $\theta_2$, chooses reform 2), drops to 0 in the middle (receiver sticks with the status quo), and rises to 1 on the right (receiver confident in $\theta_1$, chooses reform 1). The asymmetry ($2 > 1$) reflects the sender's bias toward reform 2.
+
+```{r}
+#| label: value-function
+#| fig-cap: "Sender's value function"
+#| warning: false
+#| message: false
+
+library(ggplot2)
+
+# Create data for the step function
+dv <- data.frame(
+  mu = c(0, 0.25, 0.25, 0.75, 0.75, 1),
+  v = c(2, 2, 0, 0, 1, 1)
+)
+
+ggplot(dv, aes(x = mu, y = v)) +
+  geom_line(linewidth = 1) +
+  geom_point(data = data.frame(mu = c(0.25, 0.75), v = c(0, 1)), size = 3, shape = 16) +
+  geom_point(data = data.frame(mu = c(0.25, 0.75), v = c(2, 0)), size = 3, shape = 1) +
+  scale_x_continuous(expression(mu), breaks = seq(0, 1, 0.25)) +
+  scale_y_continuous(expression(hat(v)(mu)), breaks = 0:2) +
+  theme_minimal() +
+  ggtitle("Sender's value function")
+```
+
+## Part (d): Maximum payoff from commitment
+
+By the concavification approach (Kamenica and Gentzkow 2011), the sender's optimal payoff is $\text{cav } \hat{v}(\mu_0)$, the value of the smallest concave function that lies above $\hat{v}$ everywhere, evaluated at the prior.
+
+*Computing the concave envelope.* Since $\hat{v}(\mu) = 2$ on $[0, 1/4)$, the envelope must equal 2 on $[0, 1/4]$. For $\mu > 1/4$, the highest concave function touching $\hat{v}$ is the line from $(1/4, 2)$ to $(1, 1)$:
+
+$$
+\text{cav } \hat{v}(\mu) = \begin{cases}
+2 & \text{if } \mu \in [0, 1/4], \\
+\frac{7}{3} - \frac{4}{3}\mu & \text{if } \mu \in [1/4, 1].
+\end{cases}
+$$
+
+*Verification:* on $[1/4, 1]$ the line equals 2 at $\mu = 1/4$ and 1 at $\mu = 1$, and it lies above $\hat{v}$ everywhere (it exceeds 0 on $[1/4, 3/4]$ and exceeds 1 on $(3/4, 1)$).
+
+*Evaluating at the prior:*
+
+$$
+\text{cav } \hat{v}(1/2) = \frac{7}{3} - \frac{4}{3} \cdot \frac{1}{2} = \frac{7}{3} - \frac{2}{3} = \frac{5}{3}.
+$$
+
+*Optimal signal structure.* The prior $\mu_0 = 1/2$ is split into posteriors $\mu_L = 1/4$ and $\mu_H = 1$ with probabilities $\lambda$ and $1 - \lambda$ satisfying Bayes plausibility:
+
+$$
+\lambda \cdot \frac{1}{4} + (1 - \lambda) \cdot 1 = \frac{1}{2} \implies \lambda = \frac{2}{3}.
+$$
+
+The signal structure that achieves this is:
+
+|            | $\theta_1$ | $\theta_2$ |
+|------------|------------|------------|
+| Signal $s_L$ | $1/3$      | $1$        |
+| Signal $s_H$ | $2/3$      | $0$        |
+
+*Check:* $\Pr(s_L) = \frac{1}{2} \cdot \frac{1}{3} + \frac{1}{2} \cdot 1 = \frac{2}{3}$, and $\Pr(\theta_1 \mid s_L) = \frac{1/6}{2/3} = \frac{1}{4}$. After $s_H$: $\Pr(\theta_1 \mid s_H) = 1$ (only sent in state $\theta_1$).
+
+- After $s_L$: $\mu = 1/4$, receiver is indifferent between $a = 0$ and $a = 2$; with sender-preferred tie-breaking, she plays $a = 2$. Sender gets 2.
+- After $s_H$: $\mu = 1$, receiver plays $a = 1$. Sender gets 1.
+
+$$
+E[u_S] = \frac{2}{3} \cdot 2 + \frac{1}{3} \cdot 1 = \frac{5}{3}.
+$$
+
+*Intuition.* The sender benefits from commitment because she can design an asymmetric signal: she pools "bad news" for reform 2 (i.e. $\theta_1$) with certainty about $\theta_2$, pushing the receiver just to the indifference threshold for $a = 2$, while perfectly revealing $\theta_1$ to get $a = 1$. This is strictly better than full revelation ($3/2$) or no information ($0$).
+
+## Part (e): Posterior after "choose 1"
+
+Using Bayes' rule with the given messaging probabilities:
+
+$$
+\Pr(\theta_1 \mid \text{"choose 1"}) = \frac{P(\text{"choose 1"} \mid \theta_1) \Pr(\theta_1)}{P(\text{"choose 1"})} = \frac{\frac{2}{3} \cdot \frac{1}{2}}{\frac{2}{3} \cdot \frac{1}{2} + 0 \cdot \frac{1}{2}} = \frac{1/3}{1/3} = 1.
+$$
+
+Only type $\theta_1$ ever sends "choose 1," so it is perfectly informative about $\theta_1$.
+
+## Part (f): Posterior after "choose 2"
+
+$$
+\Pr(\theta_1 \mid \text{"choose 2"}) = \frac{P(\text{"choose 2"} \mid \theta_1) \Pr(\theta_1)}{P(\text{"choose 2"})} = \frac{\frac{1}{3} \cdot \frac{1}{2}}{\frac{1}{3} \cdot \frac{1}{2} + 1 \cdot \frac{1}{2}} = \frac{1/6}{2/3} = \frac{1}{4}.
+$$
+
+After "choose 2" the receiver believes $\Pr(\theta_2) = 3/4$, which is exactly at the indifference threshold and not above it.
+
+## Part (g): Equilibrium with sender payoff 1
+
+We construct an equilibrium using the messaging probabilities from above.
+
+*Receiver's strategy:*
+
+- After "choose 1": posterior $\mu = 1 > 3/4 \Rightarrow$ play $a = 1$ (strictly optimal).
+- After "choose 2": posterior $\mu = 1/4$, so $\Pr(\theta_2) = 3/4$. The receiver is exactly indifferent between $a = 0$ and $a = 2$. She mixes: play $a = 2$ with probability $1/2$ and $a = 0$ with probability $1/2$.
+
+*Sender's incentive compatibility.* In this equilibrium:
+
+- Sending "choose 1" yields $a = 1$, giving the sender payoff 1.
+- Sending "choose 2" yields $a = 2$ with probability $1/2$ and $a = 0$ with probability $1/2$, giving the sender expected payoff $\frac{1}{2} \cdot 2 + \frac{1}{2} \cdot 0 = 1$.
+
+Both types of sender are indifferent between the two messages. This means any mixing is optimal, so the specified messaging strategy is consistent with equilibrium:
+
+- Type $\theta_1$: mixes $2/3$ on "choose 1," $1/3$ on "choose 2". ✓
+- Type $\theta_2$: sends "choose 2" with probability 1. ✓
+
+*Sender's expected payoff:*
+
+$$
+E[u_S] = \underbrace{\frac{1}{2}}_{\Pr(\theta_1)} \left( \frac{2}{3} \cdot 1 + \frac{1}{3} \cdot 1 \right) + \underbrace{\frac{1}{2}}_{\Pr(\theta_2)} (1 \cdot 1) = 1.
+$$
+
+*Intuition.* Without commitment, the sender cannot do as well as $5/3$. The key friction is incentive compatibility: if the receiver always followed "choose 2" with $a = 2$, the sender in state $\theta_1$ would deviate to always send "choose 2" (getting 2 instead of 1). The receiver's mixed strategy after "choose 2"—playing $a = 2$ only half the time—is precisely calibrated to make both sender types indifferent. The value of commitment is $5/3 - 1 = 2/3$.
+
+# Solution to Problem 2
+
+## Part (a): Nash equilibrium when neither player knows the state
+
+When neither player knows the state, they play the expected payoff matrix $A(p) = p A_1 + (1 - p) A_2$:
+
+|   | L | M | R |
+|---|---|---|---|
+| U | $4p$ | $4 - 4p$ | $4p - 2$ |
+| D | $4p$ | $4 - 4p$ | $2 - 4p$ |
+
+*Key observation.* Columns L and M give player 1 the same payoff regardless of his row choice ($4p$ under L and $4 - 4p$ under M). Only column R separates the rows: $4p - 2$ under U vs. $2 - 4p$ under D.
+
+This simplifies the analysis. Player 2 (the minimiser) simply picks the column with the smallest value, where under R she faces the worst case $|4p - 2|$ (player 1 picks the better row):
+
+$$
+v(p) = \min(4p, 4 - 4p, |4p - 2|).
+$$
+
+*Region-by-region NE strategies:*
+
+| Prior $p$ | Player 2 | Player 1 | Value $v(p)$ |
+|-----------|----------|----------|--------------|
+| $[0, 1/4]$ | L | indifferent | $4p$ |
+| $[1/4, 1/2]$ | R | D | $2 - 4p$ |
+| $[1/2, 3/4]$ | R | U | $4p - 2$ |
+| $[3/4, 1]$ | M | indifferent | $4 - 4p$ |
+
+*Sanity check at boundaries:* at $p = 1/4$, both L and R give 1; at $p = 1/2$, R gives 0 while L and M both give 2 (so R is uniquely best for player 2); at $p = 3/4$, both M and R give 1.
+
+## Part (b): Plot of $v(p)$
+
+The value function has a symmetric "M" shape:
+
+$$
+v(p) = \begin{cases}
+4p & \text{if } p \in [0, 1/4], \\
+2 - 4p & \text{if } p \in [1/4, 1/2], \\
+4p - 2 & \text{if } p \in [1/2, 3/4], \\
+4 - 4p & \text{if } p \in [3/4, 1].
+\end{cases}
+$$
+
+It rises linearly from $v(0) = 0$ to $v(1/4) = 1$, drops to $v(1/2) = 0$, rises again to $v(3/4) = 1$, and drops to $v(1) = 0$. The function is continuous, piecewise linear, and symmetric about $p = 1/2$.
+
+```{r}
+#| label: value-function-p2
+#| fig-cap: "Value function v(p)"
+#| warning: false
+#| message: false
+
+p <- seq(0, 1, length.out = 500)
+
+v <- ifelse(p <= 1/4, 4*p,
+  ifelse(p <= 1/2, 2 - 4*p,
+    ifelse(p <= 3/4, 4*p - 2, 4 - 4*p)))
+
+dvp <- data.frame(p = p, v = v)
+
+ggplot(dvp, aes(x = p, y = v)) +
+  geom_line(linewidth = 1, color = "blue") +
+  scale_x_continuous("p", breaks = seq(0, 1, 0.25)) +
+  scale_y_continuous("v(p)", breaks = seq(0, 1, 0.25)) +
+  theme_minimal() +
+  ggtitle("Value function v(p)")
+```
+
+*Intuition.* When $p$ is near 0 or 1, one state is almost certain, but player 1 (who doesn't know the state either) can't exploit this. Player 2 simply plays the dominant column (L or M), and the value vanishes. The value peaks at $p = 1/4$ and $p = 3/4$ because these are the priors where player 2 is forced to play R (the only column that depends on the row), and the payoff from R is maximised.
+
+## Part (c): Value of the infinitely repeated game at $p = 1/2$
+
+By the Aumann–Maschler theorem (Aumann and Maschler 1995), when player 1 is informed and the game is repeated infinitely, the value is the concavification $\text{cav } v(p)$.
+
+*Computing $\text{cav } v$.* The M-shaped $v$ has peaks at $(1/4, 1)$ and $(3/4, 1)$. The smallest concave function dominating $v$ is:
+
+$$
+\text{cav } v(p) = \begin{cases}
+4p & \text{if } p \in [0, 1/4], \\
+1 & \text{if } p \in [1/4, 3/4], \\
+4 - 4p & \text{if } p \in [3/4, 1].
+\end{cases}
+$$
+
+This is concave (slopes $4, 0, -4$, strictly decreasing) and dominates $v$ everywhere: on $[1/4, 3/4]$ we have $1 \geq v(p)$, with equality at the endpoints.
+
+*Evaluating at $p = 1/2$:*
+
+$$
+\text{cav } v(1/2) = 1.
+$$
+
+*How player 1 achieves value 1.* The concavification at $p = 1/2$ is achieved by splitting the prior $1/2$ into posteriors $1/4$ and $3/4$ (each with probability $1/2$). In the repeated game, player 1 plays a state-dependent mixed strategy in every period:
+
+- In state 1: play U with probability $3/4$, D with probability $1/4$.
+- In state 2: play U with probability $1/4$, D with probability $3/4$.
+
+After observing player 1's action, player 2 updates her belief via Bayes' rule:
+
+- After seeing U: $\Pr(\text{state 1} \mid U) = \frac{1/2 \cdot 3/4}{1/2 \cdot 3/4 + 1/2 \cdot 1/4} = \frac{3}{4}$.
+- After seeing D: $\Pr(\text{state 1} \mid D) = \frac{1/2 \cdot 1/4}{1/2 \cdot 1/4 + 1/2 \cdot 3/4} = \frac{1}{4}$.
+
+At both posteriors $p = 3/4$ and $p = 1/4$, the stage-game value is $v = 1$. Player 2's best responses are:
+
+- At $p = 3/4$: M and R both give 1 (L gives 3). Player 2 plays M or R.
+- At $p = 1/4$: L and R both give 1 (M gives 3). Player 2 plays L or R.
+
+In either case, player 1's expected stage payoff is 1.
+
+*Intuition.* The value jumps from $v(1/2) = 0$ (uninformed) to $\text{cav } v(1/2) = 1$ (informed). Player 1 benefits from knowing the state not by fully revealing it (which would let player 2 exploit the information via columns L or M), but by partially revealing it through his action choice. The mixing probabilities are calibrated so that player 2's posterior never reaches the extreme regions where she can drive the value to zero. This is the essence of the Aumann–Maschler result: in repeated games with incomplete information, the informed player plays a non-revealing strategy that is consistent with multiple states, preventing the opponent from learning too much.
