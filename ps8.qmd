@@ -1,0 +1,242 @@
+---
+title: "Problem Set 8 - Solutions"
+format: pdf
+---
+
+# Problem 1
+
+The economics departments of Harvard and MIT are hiring up to two assistant professors
+each. Harvard's preference ordering is:
+
+$$\{Samuelson\} \succ_H \{Arrow, Samuelson\} \succ_H \{Debreu, Samuelson\}$$
+$$\succ_H \{Arrow\} \succ_H \{Debreu\} \succ_H \{Arrow, Debreu\}.$$
+
+MIT's is:
+
+$$\{Arrow, Debreu\} \succ_M \{Samuelson\} \succ_M \{Debreu\} \succ_M \{Arrow\}$$
+$$\succ_M \{Debreu, Samuelson\} \succ_M \{Arrow, Samuelson\}.$$
+
+a. Does Harvard has substitutable preferences? Does MIT?
+b. Suppose that Arrow and Samuelson prefer MIT and Debreu prefers Harvard. Find the DAA outcome (with applicants proposing). Is it stable?
+c. Suppose that Arrow and Samuelson prefer Harvard and Debreu prefers MIT. Find the DAA outcome (with applicants proposing). Is it stable?
+
+# Problem 2
+
+Apple and Google are hiring one programmer each.
+
+Given wage $w$, Steve's utility from working is $w - 9$ and Larry's is $w$ (at either firm).
+
+Steve's value to Apple is 10 and to Google is 10.
+
+Larry's value to Apple is 5 and to Google is 10.
+
+Find the outcome of the Crawford and Knoer algorithm, assuming that the wage increments by 1 each round.
+
+# Solution to Problem 1
+
+## Substitutable Preferences
+
+A firm $c$'s preference $\succ_c$ over sets of workers is *substitutable* if for all $X \subseteq A$ and $a, a' \in X$ such that $a \neq a'$:
+
+$$a \in \chi_c(X) \implies a \in \chi_c(X \setminus \{a'\})$$
+
+where $\chi_c(X)$ is the $\succ_c$-maximal subset of $X$.
+
+If worker $a$ is chosen from set $X$, then $a$ is still chosen when any *other* worker is removed from $X$. This rules out complementarities.
+
+## Checking Substitutability
+
+### Harvard's Preferences
+
+$$\{S\} \succ_H \{A,S\} \succ_H \{D,S\} \succ_H \{A\} \succ_H \{D\} \succ_H \{A,D\}$$
+
+Check substitutability:
+
+| Available Set $X$ | $\chi_H(X)$ | Remove $a'$ | $\chi_H(X \setminus \{a'\})$ | Still contains original choice? |
+|-------------------|-------------|-------------|------------------------------|--------------------------------|
+| $\{A,S,D\}$ | $\{S\}$ | $A$ | $\{S\}$ | Yes |
+| $\{A,S,D\}$ | $\{S\}$ | $D$ | $\{S\}$ | Yes |
+| $\{A,S\}$ | $\{S\}$ | $A$ | $\{S\}$ | Yes |
+| $\{D,S\}$ | $\{S\}$ | $D$ | $\{S\}$ | Yes |
+| $\{A,D\}$ | $\{A\}$ | $D$ | $\{A\}$ | Yes |
+
+$\implies$ Harvard has substitutable preferences.
+
+### MIT's Preferences
+
+$$\{A,D\} \succ_M \{S\} \succ_M \{D\} \succ_M \{A\} \succ_M \{D,S\} \succ_M \{A,S\}$$
+
+Check substitutability:
+
+From $X = \{A,S,D\}$: $\chi_M(\{A,S,D\}) = \{A,D\}$ (MIT's top choice is available).
+
+Both $A$ and $D$ are in the chosen set. Now check:
+
+- Remove $D$: $\chi_M(\{A,S\})$. Options are $\{A\}$, $\{S\}$, $\{A,S\}$. Since $\{S\} \succ_M \{A\} \succ_M \{A,S\}$, we have $\chi_M(\{A,S\}) = \{S\}$.
+  
+  Problem: $A \in \chi_M(\{A,S,D\})$ but $A \notin \chi_M(\{A,S\})$!
+
+This violates substitutability. MIT exhibits *complementarities*: Arrow and Debreu are complements. Without Debreu, MIT prefers Samuelson alone to Arrow alone.
+
+$\implies$ MIT does NOT have substitutable preferences.
+
+## Part (b): Arrow and Samuelson prefer MIT, Debreu prefers Harvard
+
+Applicants' preferences:
+
+- Arrow: $MIT \succ Harvard \succ \emptyset$
+- Samuelson: $MIT \succ Harvard \succ \emptyset$
+- Debreu: $Harvard \succ MIT \succ \emptyset$
+
+### Running DAA (Applicants Propose)
+
+Round 1:
+
+- Arrow proposes to MIT
+- Samuelson proposes to MIT
+- Debreu proposes to Harvard
+
+*Harvard* receives $\{D\}$. $\chi_H(\{D\}) = \{D\}$. Tentatively accepts Debreu.
+
+*MIT* receives $\{A,S\}$. $\chi_M(\{A,S\}) = \{S\}$ (since $\{S\} \succ_M \{A\} \succ_M \{A,S\}$). Tentatively accepts Samuelson, rejects Arrow.
+
+Round 2:
+
+- Arrow proposes to Harvard (next best)
+
+*Harvard* receives $\{D,A\}$. $\chi_H(\{A,D\}) = \{A\}$ (since $\{A\} \succ_H \{D\} \succ_H \{A,D\}$). Accepts Arrow, rejects Debreu.
+
+Round 3:
+
+- Debreu proposes to MIT (next best)
+
+*MIT* receives $\{S,D\}$. $\chi_M(\{S,D\}) = \{S\}$ (since $\{S\} \succ_M \{D\} \succ_M \{D,S\}$). Keeps Samuelson, rejects Debreu.
+
+Round 4:
+
+- Debreu has no remaining acceptable options. Debreu is unmatched.
+
+DAA Outcome: Harvard hires Arrow, MIT hires Samuelson, Debreu unmatched.
+
+### Stability Check
+
+Consider MIT and the coalition $\{A, D\}$:
+
+- MIT: $\{A,D\} \succ_M \{S\}$ ✓ (MIT prefers $\{A,D\}$ to current match)
+- Arrow: $MIT \succ Harvard$ ✓ (Arrow prefers MIT)
+- Debreu: $MIT \succ \emptyset$ ✓ (Debreu prefers MIT to being unmatched)
+
+$\implies$ (MIT, $\{Arrow, Debreu\}$) is a blocking coalition $\implies$ NOT stable.
+
+This illustrates a key result: when preferences are not substitutable, the DAA may fail to produce a stable matching.
+
+## Part (c): Arrow and Samuelson prefer Harvard, Debreu prefers MIT
+
+Applicants' preferences:
+
+- Arrow: $Harvard \succ MIT \succ \emptyset$
+- Samuelson: $Harvard \succ MIT \succ \emptyset$
+- Debreu: $MIT \succ Harvard \succ \emptyset$
+
+### Running DAA (Applicants Propose)
+
+Round 1:
+
+- Arrow proposes to Harvard
+- Samuelson proposes to Harvard
+- Debreu proposes to MIT
+
+*Harvard* receives $\{A,S\}$. $\chi_H(\{A,S\}) = \{S\}$ (since $\{S\} \succ_H \{A,S\}$). Accepts Samuelson, rejects Arrow.
+
+*MIT* receives $\{D\}$. $\chi_M(\{D\}) = \{D\}$. Tentatively accepts Debreu.
+
+Round 2:
+
+- Arrow proposes to MIT (next best)
+
+*MIT* receives $\{D,A\}$. $\chi_M(\{A,D\}) = \{A,D\}$ (MIT's top choice!). Accepts both Arrow and Debreu.
+
+No rejections. Algorithm terminates.
+
+DAA Outcome: Harvard hires Samuelson, MIT hires $\{$Arrow, Debreu$\}$.
+
+### Stability Check
+
+| Potential Block | Would firm prefer? | Would worker prefer? | Blocking? |
+|-----------------|-------------------|---------------------|-----------|
+| (Harvard, Arrow) | $\{S\} \succ_H \{A,S\}$ and $\{S\} \succ_H \{A\}$. No | - | No |
+| (Harvard, Debreu) | $\{S\} \succ_H \{D,S\}$ and $\{S\} \succ_H \{D\}$. No | - | No |
+| (MIT, Samuelson) | $\{A,D\} \succ_M \{A,D,S\}$? Need to check. MIT has top choice already. No incentive. | $Harvard \succ_S MIT$. No | No |
+
+$\implies$ DAA outcome is stable.
+
+# Solution to Problem 2
+
+## Crawford and Knoer Algorithm
+
+### Setup
+
+- Employees: Steve ($S$), Larry ($L$)
+- Employers: Apple ($A$), Google ($G$), each hiring at most one
+- Values and Utilities:
+
+| | Value to Apple | Value to Google | Utility from wage $w$ |
+|--|----------------|-----------------|----------------------|
+| Steve | $v_{SA} = 10$ | $v_{SG} = 10$ | $u_S = w - 9$ |
+| Larry | $v_{LA} = 5$ | $v_{LG} = 10$ | $u_L = w$ |
+
+- Wage increment: $h = 1$
+
+### Initial Wages
+
+Initial wage $w^0(a,c)$ is smallest $k \cdot h$ such that $u_{ac} + kh \geq 0$:
+
+- Steve: needs $w - 9 \geq 0$, so $w^0(S, \cdot) = 9$
+- Larry: needs $w \geq 0$, so $w^0(L, \cdot) = 0$
+
+### Algorithm Trace
+
+| Round | Wages $(L,A)$, $(L,G)$ | Apple offers to | Google offers to | Larry/Steve choose | Rejected by |
+|-------|------------------------|-----------------|------------------|-------------------|-------------|
+| 0 | 0, 0 | L (surplus 5) | L (surplus 10) | L→G | Apple |
+| 1 | 1, 0 | L (surplus 4) | L (surplus 10) | L→A (util 1>0) | Google |
+| 2 | 1, 1 | L | L (surplus 9) | L→A (tie, stay) | Google |
+| 3 | 1, 2 | L | L (surplus 8) | L→G (util 2>1) | Apple |
+| 4 | 2, 2 | L (surplus 3) | L | L→G (tie, stay) | Apple |
+| 5 | 3, 2 | L (surplus 2) | L | L→A (util 3>2) | Google |
+| 6 | 3, 3 | L | L (surplus 7) | L→A (tie, stay) | Google |
+| 7 | 3, 4 | L | L (surplus 6) | L→G (util 4>3) | Apple |
+| 8 | 4, 4 | L (surplus 1) | L | L→G (tie, stay) | Apple |
+| 9 | 5, 4 | S (surplus 1 > 0) | L | S→A, L→G | None! |
+
+Key transition in Round 9: Apple's surplus from Larry drops to $5 - 5 = 0$, while surplus from Steve is $10 - 9 = 1$. Apple switches to offering Steve.
+
+### Final Outcome
+
+Apple hires Steve at $w = 9$, Google hires Larry at $w = 4$.
+
+### Verification
+
+Payoffs:
+
+| Agent | Utility/Profit |
+|-------|---------------|
+| Steve | $9 - 9 = 0$ |
+| Larry | $4$ |
+| Apple | $10 - 9 = 1$ |
+| Google | $10 - 4 = 6$ |
+
+Stability check:
+
+- *Could Apple-Larry block?* Apple needs profit $\geq 1$, so $w \leq 4$. Larry needs utility $\geq 4$, so $w \geq 4$. At $w = 4$: same payoffs as current. Not strictly better. ✗
+
+- *Could Google-Steve block?* Google needs profit $> 6$, so $w < 4$. Steve needs utility $> 0$, so $w > 9$. Impossible. ✗
+
+The matching is stable.
+
+### Economic Interpretation
+
+- Steve has high outside option (disutility of 9), so commands wage of 9
+- Larry has no outside option, but competition between firms drives his wage up to 4
+- Google values Larry highly (10), so ends up with Larry and large surplus (6)
+- Apple values Steve more than Larry at equilibrium wages, so hires Steve
